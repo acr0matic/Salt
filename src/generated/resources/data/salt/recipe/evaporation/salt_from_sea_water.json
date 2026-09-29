@@ -1,0 +1,20 @@
+{
+  "type": "salt:evaporation",
+  "input": "salt:sea_water_cauldron",
+  "result": {
+    "Name": "salt:salt_cauldron",
+    "Properties": {
+      "level": "1",
+      "water_type": "sea"
+    }
+  },
+  "results": [
+    {
+      "item": "salt:salt"
+    },
+    {
+      "chance": 0.25,
+      "item": "salt:salt"
+    }
+  ]
+}

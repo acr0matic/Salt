@@ -3,6 +3,7 @@ package io.github.mortuusars.salt.data.provider;
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.block.SaltCauldronBlock;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
@@ -105,16 +106,29 @@ public class BlockStatesAndModels extends BlockStateProvider {
         directionalBlock(Salt.Blocks.SMALL_SALT_BUD.get(), models().cross(Salt.Blocks.SMALL_SALT_BUD.getId().getPath(),
                 blockTexture(Salt.Blocks.SMALL_SALT_BUD.get())).renderType("cutout"));
 
-        getVariantBuilder(Salt.Blocks.SALT_CAULDRON.get())
-                .partialState().with(SaltCauldronBlock.LEVEL, 1)
+        for (SaltCauldronBlock.WaterType waterType : SaltCauldronBlock.WaterType.values()) {
+            getVariantBuilder(Salt.Blocks.SALT_CAULDRON.get())
+                    .partialState().with(SaltCauldronBlock.WATER_TYPE, waterType).with(SaltCauldronBlock.LEVEL, 1)
+                    .modelForState().modelFile(
+                            models().getExistingFile(modLoc("block/salt_cauldron_level_1"))).addModel()
+                    .partialState().with(SaltCauldronBlock.WATER_TYPE, waterType).with(SaltCauldronBlock.LEVEL, 2)
+                    .modelForState().modelFile(
+                            models().getExistingFile(modLoc("block/salt_cauldron_level_2"))).addModel()
+                    .partialState().with(SaltCauldronBlock.WATER_TYPE, waterType).with(SaltCauldronBlock.LEVEL, 3)
+                    .modelForState().modelFile(
+                            models().getExistingFile(modLoc("block/salt_cauldron_full"))).addModel();
+        }
+
+        getVariantBuilder(Salt.Blocks.SEA_WATER_CAULDRON.get())
+                .partialState().with(LayeredCauldronBlock.LEVEL, 1)
                 .modelForState().modelFile(
-                        models().getExistingFile(modLoc("block/salt_cauldron_level_1"))).addModel()
-                .partialState().with(SaltCauldronBlock.LEVEL, 2)
+                        models().getExistingFile(mcLoc("block/water_cauldron_level1"))).addModel()
+                .partialState().with(LayeredCauldronBlock.LEVEL, 2)
                 .modelForState().modelFile(
-                        models().getExistingFile(modLoc("block/salt_cauldron_level_2"))).addModel()
-                .partialState().with(SaltCauldronBlock.LEVEL, 3)
+                        models().getExistingFile(mcLoc("block/water_cauldron_level2"))).addModel()
+                .partialState().with(LayeredCauldronBlock.LEVEL, 3)
                 .modelForState().modelFile(
-                        models().getExistingFile(modLoc("block/salt_cauldron_full"))).addModel();
+                        models().getExistingFile(mcLoc("block/water_cauldron_full"))).addModel();
 
         simpleBlock(Salt.Blocks.SALT_LAMP.get(), models().cubeBottomTop("salt_lamp",
                 Salt.resource("block/salt_lamp_side"),

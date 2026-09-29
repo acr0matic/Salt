@@ -18,6 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.event.RegisterColorHandlersEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.fml.ModList;
@@ -37,6 +38,7 @@ public class ClientEvents {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(Salt.Items.SALT.get());
             event.accept(Salt.Items.RAW_ROCK_SALT.get());
+            event.accept(Salt.Items.SAND_PIECE.get());
             event.accept(Salt.Items.SEA_WATER_BUCKET.get());
         }
 
@@ -91,6 +93,13 @@ public class ClientEvents {
             }
         }, Salt.FluidTypes.SEA_WATER.get());
 
+    }
+
+    @SubscribeEvent
+    public static void registerBlockColors(RegisterColorHandlersEvent.Block event) {
+        // Sea water inside its cauldron is tinted like the sea water fluid itself.
+        event.register((state, level, pos, tintIndex) -> SeaWaterVisuals.seaWaterColor(),
+                Salt.Blocks.SEA_WATER_CAULDRON.get());
     }
 
     @SubscribeEvent

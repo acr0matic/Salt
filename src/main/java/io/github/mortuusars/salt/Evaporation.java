@@ -9,7 +9,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
@@ -34,13 +34,35 @@ public class Evaporation {
     }
 
     /**
-     * Finds the first evaporation recipe producing the given result block.
-     * Used by result containers to determine their drops.
+     * Finds the first evaporation recipe producing the given result state.
+     * All properties except LEVEL must match, so recipes can distinguish
+     * e.g. salt crust formed from sea vs fresh water.
      */
-    public static Optional<RecipeHolder<EvaporationRecipe>> findRecipeByResult(ServerLevel level, Block resultBlock) {
+    public static Optional<RecipeHolder<EvaporationRecipe>> findRecipeByResult(ServerLevel level, BlockState state) {
         return level.getRecipeManager().getAllRecipesFor(Salt.RecipeTypes.EVAPORATION.get()).stream()
-                .filter(holder -> holder.value().result().getBlock() == resultBlock)
+                .filter(holder -> resultMatches(holder.value().result(), state))
                 .findFirst();
+    }
+
+    private static boolean resultMatches(BlockState result, BlockState state) {
+        if (result.getBlock() != state.getBlock())
+            return false;
+        for (Property<?> property : result.getProperties()) {
+            if (property == LayeredCauldronBlock.LEVEL)
+                continue;
+            if (!state.hasProperty(property) || !state.getValue(property).equals(result.getValue(property)))
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Cauldrons whose contents can boil away over a heat source — vanilla water
+     * and our sea water. Used for the boiling hurt/bubble visuals.
+     */
+    public static boolean isBoilingLiquidCauldron(BlockState state) {
+        return state.is(Blocks.WATER_CAULDRON)
+                || state.is(Salt.Blocks.SEA_WATER_CAULDRON.get());
     }
 
     public static void onWaterCauldronAnimateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

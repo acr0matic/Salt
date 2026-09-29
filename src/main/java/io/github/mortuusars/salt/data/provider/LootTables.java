@@ -36,6 +36,7 @@ public class LootTables {
             dropSelf(Salt.Blocks.RAW_ROCK_SALT_BLOCK.get());
             dropSelf(Salt.Blocks.SALT_LAMP.get());
             dropOther(Salt.Blocks.SALT_CAULDRON.get(), Blocks.CAULDRON);
+            dropOther(Salt.Blocks.SEA_WATER_CAULDRON.get(), Blocks.CAULDRON);
 
             add(Salt.Blocks.ROCK_SALT_ORE.get(), block -> createOreDrop(block, Salt.Items.RAW_ROCK_SALT.get()));
             add(Salt.Blocks.DEEPSLATE_ROCK_SALT_ORE.get(), block -> createOreDrop(block, Salt.Items.RAW_ROCK_SALT.get()));

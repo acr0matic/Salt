@@ -23,6 +23,13 @@ public class ItemTags extends ItemTagsProvider {
         tag(Salt.ItemTags.FORGE_TORCHES)
                 .add(Items.TORCH);
 
+        tag(Salt.ItemTags.SAND_PIECES)
+                .add(Salt.Items.SAND_PIECE.get());
+        tag(Salt.ItemTags.COMMON_DUSTS)
+                .add(Salt.Items.SAND_PIECE.get());
+        tag(Salt.ItemTags.COMMON_DUSTS_SAND)
+                .add(Salt.Items.SAND_PIECE.get());
+
         tag(Salt.ItemTags.FORGE_SALTS)
                 .add(Salt.Items.SALT.get());
 

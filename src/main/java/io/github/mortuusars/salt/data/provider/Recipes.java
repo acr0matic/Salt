@@ -2,6 +2,7 @@ package io.github.mortuusars.salt.data.provider;
 
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.salt.Salt;
+import io.github.mortuusars.salt.block.SaltCauldronBlock;
 import io.github.mortuusars.salt.recipe.CrystalGrowingRecipe;
 import io.github.mortuusars.salt.recipe.EvaporationRecipe;
 import net.minecraft.core.HolderGetter;
@@ -40,15 +41,26 @@ public class Recipes extends RecipeProvider {
     protected void buildRecipes(@NotNull RecipeOutput recipeOutput) {
         HolderGetter<Block> blocks = lookupProvider.join().lookupOrThrow(Registries.BLOCK);
 
-        recipeOutput.accept(Salt.resource("evaporation/salt_from_water"),
+        recipeOutput.accept(Salt.resource("evaporation/sand_from_water"),
                 new EvaporationRecipe(
                         HolderSet.direct(BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.WATER_CAULDRON)),
                         Salt.Blocks.SALT_CAULDRON.get().defaultBlockState(),
                         Either.right(Map.of(
-                                1, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.75f)),
-                                2, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.9f)),
-                                3, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 1f),
-                                        new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.25f)))),
+                                1, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SAND_PIECE.get()), 0.75f)),
+                                2, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SAND_PIECE.get()), 0.9f)),
+                                3, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SAND_PIECE.get()), 1f),
+                                        new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SAND_PIECE.get()), 0.25f)))),
+                        1f),
+                null);
+
+        recipeOutput.accept(Salt.resource("evaporation/salt_from_sea_water"),
+                new EvaporationRecipe(
+                        HolderSet.direct(BuiltInRegistries.BLOCK.wrapAsHolder(Salt.Blocks.SEA_WATER_CAULDRON.get())),
+                        Salt.Blocks.SALT_CAULDRON.get().defaultBlockState()
+                                .setValue(SaltCauldronBlock.WATER_TYPE, SaltCauldronBlock.WaterType.SEA),
+                        Either.left(List.of(
+                                new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 1f),
+                                new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.25f))),
                         1f),
                 null);
 
@@ -101,6 +113,13 @@ public class Recipes extends RecipeProvider {
                 .requires(Salt.Items.RAW_ROCK_SALT.get())
                 .unlockedBy("has_rock_salt", has(Salt.Items.RAW_ROCK_SALT.get()))
                 .save(recipeOutput, Salt.resource("salt_from_raw_rock_salt"));
+
+        ShapedRecipeBuilder.shaped(RecipeCategory.BUILDING_BLOCKS, Blocks.SAND)
+                .pattern("##")
+                .pattern("##")
+                .define('#', Salt.ItemTags.SAND_PIECES)
+                .unlockedBy("has_sand_piece", has(Salt.ItemTags.SAND_PIECES))
+                .save(recipeOutput, Salt.resource("sand_from_pieces"));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.GUNPOWDER, 2)
                 .requires(Salt.ItemTags.FORGE_SALTS)

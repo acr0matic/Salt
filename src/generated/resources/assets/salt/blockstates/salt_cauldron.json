@@ -1,12 +1,21 @@
 {
   "variants": {
-    "level=1": {
+    "level=1,water_type=normal": {
       "model": "salt:block/salt_cauldron_level_1"
     },
-    "level=2": {
+    "level=1,water_type=sea": {
+      "model": "salt:block/salt_cauldron_level_1"
+    },
+    "level=2,water_type=normal": {
       "model": "salt:block/salt_cauldron_level_2"
     },
-    "level=3": {
+    "level=2,water_type=sea": {
+      "model": "salt:block/salt_cauldron_level_2"
+    },
+    "level=3,water_type=normal": {
+      "model": "salt:block/salt_cauldron_full"
+    },
+    "level=3,water_type=sea": {
       "model": "salt:block/salt_cauldron_full"
     }
   }

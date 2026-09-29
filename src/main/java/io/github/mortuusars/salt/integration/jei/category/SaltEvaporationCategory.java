@@ -24,13 +24,17 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 public class SaltEvaporationCategory implements IRecipeCategory<RecipeHolder<EvaporationRecipe>> {
@@ -76,6 +80,17 @@ public class SaltEvaporationCategory implements IRecipeCategory<RecipeHolder<Eva
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull RecipeHolder<EvaporationRecipe> holder, @NotNull IFocusGroup focuses) {
         EvaporationRecipe recipe = holder.value();
 
+        List<Fluid> inputFluids = new ArrayList<>();
+        recipe.input().forEach(h -> fluidFor(h.value()).ifPresent(fluid -> {
+            if (!inputFluids.contains(fluid))
+                inputFluids.add(fluid);
+        }));
+        if (!inputFluids.isEmpty()) {
+            var slot = builder.addSlot(RecipeIngredientRole.INPUT, 29, 14)
+                    .setStandardSlotBackground();
+            inputFluids.forEach(fluid -> slot.addFluidStack(fluid, 1000));
+        }
+
         List<ItemStack> resultBlocks = List.of(new ItemStack(recipe.result().getBlock()));
         builder.addSlot(RecipeIngredientRole.OUTPUT, 121, 45).addItemStacks(resultBlocks);
 
@@ -108,6 +123,17 @@ public class SaltEvaporationCategory implements IRecipeCategory<RecipeHolder<Eva
                                                         .withStyle(ChatFormatting.GRAY));
                                             }
                                         })));
+    }
+
+    /**
+     * Liquid shown over the painted cauldron, marking the fluid type of the recipe input.
+     */
+    private static Optional<Fluid> fluidFor(Block block) {
+        if (block == Blocks.WATER_CAULDRON)
+            return Optional.of(Fluids.WATER);
+        if (block == Salt.Blocks.SEA_WATER_CAULDRON.get())
+            return Optional.of(Salt.Fluids.SEA_WATER.get());
+        return Optional.empty();
     }
 
     private static void addUniqueDrop(List<ItemStack> drops, EvaporationRecipe.Drop drop) {

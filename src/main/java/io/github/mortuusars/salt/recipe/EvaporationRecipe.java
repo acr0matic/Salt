@@ -35,14 +35,19 @@ import java.util.Map;
  * {
  *   "type": "salt:evaporation",
  *   "input": "minecraft:water_cauldron",
- *   "result": "salt:salt_cauldron",
+ *   "result": {
+ *     "Name": "salt:salt_cauldron",
+ *     "Properties": {"level": "1", "water_type": "normal"}
+ *   },
  *   "results": {
- *     "1": [{"item": "salt:salt", "chance": 0.75}],
- *     "2": [{"item": "salt:salt", "chance": 0.9}],
- *     "3": [{"item": "salt:salt"}, {"item": "salt:salt", "chance": 0.25}]
+ *     "1": [{"item": "salt:sand_piece", "chance": 0.75}],
+ *     "2": [{"item": "salt:sand_piece", "chance": 0.9}],
+ *     "3": [{"item": "salt:sand_piece"}, {"item": "salt:sand_piece", "chance": 0.25}]
  *   }
  * }
  * </pre>
+ * The result's non-LEVEL properties are recorded on the produced block and later used
+ * to select the matching recipe on harvest (e.g. fresh vs sea water residue).
  */
 public class EvaporationRecipe implements Recipe<EvaporationRecipe.Input> {
     public record Input(BlockState state) implements RecipeInput {

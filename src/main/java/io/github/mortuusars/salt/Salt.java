@@ -40,6 +40,7 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -200,6 +201,13 @@ public class Salt {
         public static final DeferredHolder<Block, SaltCauldronBlock> SALT_CAULDRON = BLOCKS.register("salt_cauldron",
                 () -> new SaltCauldronBlock(net.minecraft.world.level.biome.Biome.Precipitation.RAIN, CauldronInteraction.EMPTY));
 
+        public static final CauldronInteraction.InteractionMap SEA_WATER_CAULDRON_INTERACTIONS =
+                CauldronInteraction.newInteractionMap("sea_water");
+
+        public static final DeferredHolder<Block, LayeredCauldronBlock> SEA_WATER_CAULDRON = BLOCKS.register("sea_water_cauldron",
+                () -> new LayeredCauldronBlock(net.minecraft.world.level.biome.Biome.Precipitation.NONE, SEA_WATER_CAULDRON_INTERACTIONS,
+                        BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.CAULDRON)));
+
         public static final DeferredHolder<Block, SaltBlock> SALT_LAMP = BLOCKS.register("salt_lamp",
                 () -> new SaltBlock(net.minecraft.world.level.block.Blocks.SPRUCE_SLAB.defaultBlockState(),
                         BlockBehaviour.Properties.of()
@@ -214,6 +222,7 @@ public class Salt {
         private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Salt.ID);
         public static final DeferredHolder<Item, SaltItem> SALT = ITEMS.register("salt", () -> new SaltItem(new Item.Properties()));
         public static final DeferredHolder<Item, Item> RAW_ROCK_SALT = ITEMS.register("raw_rock_salt", () -> new Item(new Item.Properties()));
+        public static final DeferredHolder<Item, Item> SAND_PIECE = ITEMS.register("sand_piece", () -> new Item(new Item.Properties()));
         public static final DeferredHolder<Item, SeaWaterBucketItem> SEA_WATER_BUCKET = ITEMS.register("sea_water_bucket",
                 () -> new SeaWaterBucketItem(Fluids.SEA_WATER.get(), new Item.Properties().stacksTo(1)));
 
@@ -303,11 +312,13 @@ public class Salt {
 
     public static class ItemTags {
         public static final TagKey<Item> CAN_BE_SALTED = TagKey.create(Registries.ITEM, Salt.resource("can_be_salted"));
+        public static final TagKey<Item> SAND_PIECES = TagKey.create(Registries.ITEM, Salt.resource("sand_pieces"));
         public static final TagKey<Item> FORGE_SALTS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "salts"));
         public static final TagKey<Item> FORGE_TORCHES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "torches"));
         public static final TagKey<Item> COMMON_SALT = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "salt"));
         public static final TagKey<Item> COMMON_DUSTS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dusts"));
         public static final TagKey<Item> COMMON_DUSTS_SALT = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dusts/salt"));
+        public static final TagKey<Item> COMMON_DUSTS_SAND = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dusts/sand"));
     }
 
     public static class BlockTags {

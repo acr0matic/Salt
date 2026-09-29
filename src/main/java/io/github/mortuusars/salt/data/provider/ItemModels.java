@@ -33,6 +33,7 @@ public class ItemModels extends ItemModelProvider {
 
         singleTextureItem(Salt.Items.SALT.get());
         singleTextureItem(Salt.Items.RAW_ROCK_SALT.get());
+        singleTextureItem(Salt.Items.SAND_PIECE.get());
         withExistingParent(Salt.Items.SEA_WATER_BUCKET.getId().getPath(), mcLoc("item/water_bucket"));
         blockItem(Salt.Items.SALT_BLOCK.get());
         withExistingParent(Salt.Blocks.ROCK_SALT_ORE.getId().getPath(),

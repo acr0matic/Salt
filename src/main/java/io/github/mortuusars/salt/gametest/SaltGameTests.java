@@ -3,6 +3,7 @@ package io.github.mortuusars.salt.gametest;
 import io.github.mortuusars.salt.Evaporation;
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.Salting;
+import io.github.mortuusars.salt.block.SaltCauldronBlock;
 import io.github.mortuusars.salt.recipe.CrystalGrowingRecipe;
 import io.github.mortuusars.salt.recipe.EvaporationRecipe;
 import net.minecraft.gametest.framework.GameTest;
@@ -14,6 +15,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
@@ -62,7 +65,8 @@ public class SaltGameTests {
         helper.succeed();
     }
 
-    // The default evaporation datapack recipe must match a water cauldron and produce the salt cauldron.
+    // The default evaporation recipe must match a water cauldron and produce the salt cauldron
+    // marked as fresh-water residue, dropping sand pieces.
     @GameTest(template = "empty")
     public static void evaporationRecipeMatchesWaterCauldron(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
@@ -72,6 +76,51 @@ public class SaltGameTests {
 
         helper.assertTrue(recipe.isPresent(), "No evaporation recipe for water cauldron");
         helper.assertValueEqual(recipe.get().value().result().getBlock(), Salt.Blocks.SALT_CAULDRON.get(), "evaporation result");
+        helper.assertValueEqual(recipe.get().value().result().getValue(SaltCauldronBlock.WATER_TYPE),
+                SaltCauldronBlock.WaterType.NORMAL, "result water type");
+        helper.assertValueEqual(recipe.get().value().dropsForLevel(3).getFirst().item().getItem(),
+                Salt.Items.SAND_PIECE.get(), "fresh water drop");
+        helper.succeed();
+    }
+
+    // Sea water must evaporate through its own recipe, producing a sea-water salt cauldron
+    // that drops salt instead of sand.
+    @GameTest(template = "empty")
+    public static void evaporationRecipeMatchesSeaWaterCauldron(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+
+        Optional<RecipeHolder<EvaporationRecipe>> recipe = Evaporation.findRecipe(level,
+                Salt.Blocks.SEA_WATER_CAULDRON.get().defaultBlockState()
+                        .setValue(LayeredCauldronBlock.LEVEL, 3));
+
+        helper.assertTrue(recipe.isPresent(), "No evaporation recipe for sea water cauldron");
+        helper.assertValueEqual(recipe.get().value().result().getBlock(), Salt.Blocks.SALT_CAULDRON.get(), "evaporation result");
+        helper.assertValueEqual(recipe.get().value().result().getValue(SaltCauldronBlock.WATER_TYPE),
+                SaltCauldronBlock.WaterType.SEA, "result water type");
+        helper.assertValueEqual(recipe.get().value().dropsForLevel(3).getFirst().item().getItem(),
+                Salt.Items.SALT.get(), "sea water drop");
+        helper.succeed();
+    }
+
+    // Two salt cauldrons differing only by water_type must resolve to different recipes when harvested.
+    @GameTest(template = "empty")
+    public static void evaporationResultLookupDistinguishesWaterTypes(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+
+        BlockState normalResult = Salt.Blocks.SALT_CAULDRON.get().defaultBlockState()
+                .setValue(SaltCauldronBlock.WATER_TYPE, SaltCauldronBlock.WaterType.NORMAL)
+                .setValue(LayeredCauldronBlock.LEVEL, 3);
+        BlockState seaResult = normalResult.setValue(SaltCauldronBlock.WATER_TYPE, SaltCauldronBlock.WaterType.SEA);
+
+        Optional<RecipeHolder<EvaporationRecipe>> normalRecipe = Evaporation.findRecipeByResult(level, normalResult);
+        Optional<RecipeHolder<EvaporationRecipe>> seaRecipe = Evaporation.findRecipeByResult(level, seaResult);
+
+        helper.assertTrue(normalRecipe.isPresent(), "No recipe for fresh-water salt cauldron");
+        helper.assertTrue(seaRecipe.isPresent(), "No recipe for sea-water salt cauldron");
+        helper.assertValueEqual(normalRecipe.get().value().dropsForLevel(3).getFirst().item().getItem(),
+                Salt.Items.SAND_PIECE.get(), "fresh-water harvest drop");
+        helper.assertValueEqual(seaRecipe.get().value().dropsForLevel(3).getFirst().item().getItem(),
+                Salt.Items.SALT.get(), "sea-water harvest drop");
         helper.succeed();
     }
 

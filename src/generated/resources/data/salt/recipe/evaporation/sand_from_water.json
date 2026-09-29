@@ -4,29 +4,30 @@
   "result": {
     "Name": "salt:salt_cauldron",
     "Properties": {
-      "level": "1"
+      "level": "1",
+      "water_type": "normal"
     }
   },
   "results": {
     "1": [
       {
         "chance": 0.75,
-        "item": "salt:salt"
+        "item": "salt:sand_piece"
       }
     ],
     "2": [
       {
         "chance": 0.9,
-        "item": "salt:salt"
+        "item": "salt:sand_piece"
       }
     ],
     "3": [
       {
-        "item": "salt:salt"
+        "item": "salt:sand_piece"
       },
       {
         "chance": 0.25,
-        "item": "salt:salt"
+        "item": "salt:sand_piece"
       }
     ]
   }

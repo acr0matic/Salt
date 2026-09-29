@@ -18,13 +18,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -35,6 +33,8 @@ import net.minecraft.world.level.block.LayeredCauldronBlock;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
@@ -44,11 +44,20 @@ import org.jetbrains.annotations.NotNull;
 
 
 public class SaltCauldronBlock extends LayeredCauldronBlock {
+    public static final EnumProperty<WaterType> WATER_TYPE = EnumProperty.create("water_type", WaterType.class);
+
     private final Biome.Precipitation precipitationType;
 
     public SaltCauldronBlock(Biome.Precipitation precipitationType, CauldronInteraction.InteractionMap interactions) {
         super(precipitationType, interactions, BlockBehaviour.Properties.ofFullCopy(Blocks.CAULDRON));
         this.precipitationType = precipitationType;
+        this.registerDefaultState(this.defaultBlockState().setValue(WATER_TYPE, WaterType.NORMAL));
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<net.minecraft.world.level.block.Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
+        builder.add(WATER_TYPE);
     }
 
     @Override
@@ -80,7 +89,7 @@ public class SaltCauldronBlock extends LayeredCauldronBlock {
 
     protected void dropContents(ServerLevel level, BlockState state, BlockPos pos) {
         int fullness = state.getValue(LEVEL);
-        Evaporation.findRecipeByResult(level, this).ifPresent(holder -> {
+        Evaporation.findRecipeByResult(level, state).ifPresent(holder -> {
             for (EvaporationRecipe.Drop drop : holder.value().dropsForLevel(fullness)) {
                 if (level.random.nextFloat() <= drop.chance())
                     spawnDrop(level, pos, drop.item().copy());
@@ -144,6 +153,22 @@ public class SaltCauldronBlock extends LayeredCauldronBlock {
             level.setBlockAndUpdate(pos, Blocks.WATER_CAULDRON.defaultBlockState());
             level.levelEvent(LevelEvent.SOUND_DRIP_WATER_INTO_CAULDRON, pos, 0);
             level.gameEvent(null, GameEvent.FLUID_PLACE, pos);
+        }
+    }
+
+    public enum WaterType implements net.minecraft.util.StringRepresentable {
+        NORMAL("normal"),
+        SEA("sea");
+
+        private final String name;
+
+        WaterType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public @NotNull String getSerializedName() {
+            return name;
         }
     }
 }
