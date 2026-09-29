@@ -44,3 +44,10 @@ type="optional"
 versionRange="[3.0,)"
 ordering="NONE"
 side="CLIENT"
+
+[[dependencies.${mod_id}]]
+modId="legendarysurvivaloverhaul"
+type="optional"
+versionRange="[2.4,)"
+ordering="AFTER"
+side="BOTH"

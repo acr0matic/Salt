@@ -6,6 +6,8 @@ import io.github.mortuusars.salt.client.LangKeys;
 import io.github.mortuusars.salt.client.rendering.LayeredBakedModel;
 import io.github.mortuusars.salt.fluid.SeaWaterVisuals;
 import io.github.mortuusars.salt.integration.AppleSkinHandler;
+import io.github.mortuusars.salt.integration.LegendarySurvivalOverhaulClientHandler;
+import io.github.mortuusars.salt.integration.LegendarySurvivalOverhaulHandler;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -67,6 +69,9 @@ public class ClientEvents {
         NeoForge.EVENT_BUS.addListener(ClientEvents::onItemTooltipEvent);
         if (ModList.get().isLoaded("appleskin"))
             NeoForge.EVENT_BUS.register(new AppleSkinHandler());
+        if (ModList.get().isLoaded(LegendarySurvivalOverhaulHandler.MOD_ID))
+            NeoForge.EVENT_BUS.addListener(
+                    LegendarySurvivalOverhaulClientHandler::onGatherTooltipComponents);
     }
 
     @SubscribeEvent

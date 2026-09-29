@@ -23,6 +23,12 @@ public class Configuration {
     public static final ModConfigSpec.ConfigValue<List<? extends String>> SALTING_INDIVIDUAL_VALUES;
     public static final Map<String, Salting.FoodValue> FOOD_VALUES = new HashMap<>();
 
+    // Legendary Survival Overhaul:
+    public static final ModConfigSpec.BooleanValue SALTING_THIRST_ENABLED;
+    public static final ModConfigSpec.DoubleValue SALTING_THIRST_MULTIPLIER;
+    public static final ModConfigSpec.DoubleValue SALTING_THIRST_MIN;
+    public static final ModConfigSpec.DoubleValue SALTING_THIRST_MAX;
+
     // Dissolving
     public static final ModConfigSpec.BooleanValue DISSOLVING_ENABLED;
     public static final ModConfigSpec.DoubleValue DISSOLVING_CHANCE;
@@ -86,7 +92,19 @@ public class Configuration {
                         "Separated by commas. Saturation is optional (will use default value if not specified)")
                 .defineList("SaltingFoodValues", List.of("minecraft:rotten_flesh,1,1"), o -> true);
 
-
+        SALTING_THIRST_ENABLED = builder
+                .comment("Eating salted food drains hydration if Legendary Survival Overhaul is installed.")
+                .define("SaltingThirstEnabled", true);
+        SALTING_THIRST_MULTIPLIER = builder
+                .comment("Hydration droplets drained per point of the food's base nutrition.",
+                        "1 droplet on the LSO thirst bar = 2 hydration points.")
+                .defineInRange("SaltingThirstMultiplier", 0.1875d, 0.0d, 10.0d);
+        SALTING_THIRST_MIN = builder
+                .comment("Minimum droplets of hydration drained by salted food.")
+                .defineInRange("SaltingThirstMin", 0.5d, 0.0d, 20.0d);
+        SALTING_THIRST_MAX = builder
+                .comment("Maximum droplets of hydration drained by salted food.")
+                .defineInRange("SaltingThirstMax", 3.0d, 0.0d, 20.0d);
 
         builder.pop();
 

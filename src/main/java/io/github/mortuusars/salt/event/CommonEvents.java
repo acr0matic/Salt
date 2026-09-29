@@ -2,12 +2,14 @@ package io.github.mortuusars.salt.event;
 
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.Salting;
+import io.github.mortuusars.salt.integration.LegendarySurvivalOverhaulHandler;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -57,5 +59,11 @@ public class CommonEvents {
 
         if (player instanceof ServerPlayer serverPlayer && !serverPlayer.isCreative())
             Salt.Advancements.SALTED_FOOD_CONSUMED.get().trigger(serverPlayer);
+
+        if (LegendarySurvivalOverhaulHandler.isLoaded()) {
+            FoodProperties food = stack.getFoodProperties(player);
+            if (food != null)
+                LegendarySurvivalOverhaulHandler.drainHydration(player, food.nutrition());
+        }
     }
 }
