@@ -139,7 +139,7 @@ public class Configuration {
         builder.push("Melting");
 
         MELTING_ITEM_ENABLED = builder
-                .comment("Salt (item) will melt clicked blocks defined in tag 'salt/tags/blocks/meltables'.")
+                .comment("Items in tag 'c:salts' will melt clicked blocks defined in tag 'salt/tags/blocks/meltables'.")
                 .define("SaltItemMeltingEnabled", true);
 
         MELTING_BY_BLOCK_ENABLED = builder

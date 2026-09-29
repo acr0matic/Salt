@@ -14,7 +14,6 @@ import io.github.mortuusars.salt.recipe.EvaporationRecipe;
 import io.github.mortuusars.salt.event.CommonEvents;
 import io.github.mortuusars.salt.fluid.SeaWaterBucketItem;
 import io.github.mortuusars.salt.fluid.SeaWaterEvents;
-import io.github.mortuusars.salt.item.SaltItem;
 import io.github.mortuusars.salt.world.feature.MineralDepositFeature;
 import io.github.mortuusars.salt.world.feature.configurations.MineralDepositConfiguration;
 import net.minecraft.advancements.CriterionTrigger;
@@ -220,7 +219,7 @@ public class Salt {
 
     public static class Items {
         private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Salt.ID);
-        public static final DeferredHolder<Item, SaltItem> SALT = ITEMS.register("salt", () -> new SaltItem(new Item.Properties()));
+        public static final DeferredHolder<Item, Item> SALT = ITEMS.register("salt", () -> new Item(new Item.Properties()));
         public static final DeferredHolder<Item, Item> RAW_ROCK_SALT = ITEMS.register("raw_rock_salt", () -> new Item(new Item.Properties()));
         public static final DeferredHolder<Item, Item> SAND_PIECE = ITEMS.register("sand_piece", () -> new Item(new Item.Properties()));
         public static final DeferredHolder<Item, SeaWaterBucketItem> SEA_WATER_BUCKET = ITEMS.register("sea_water_bucket",

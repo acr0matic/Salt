@@ -58,9 +58,11 @@ public class Recipes extends RecipeProvider {
                         HolderSet.direct(BuiltInRegistries.BLOCK.wrapAsHolder(Salt.Blocks.SEA_WATER_CAULDRON.get())),
                         Salt.Blocks.SALT_CAULDRON.get().defaultBlockState()
                                 .setValue(SaltCauldronBlock.WATER_TYPE, SaltCauldronBlock.WaterType.SEA),
-                        Either.left(List.of(
-                                new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 1f),
-                                new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.25f))),
+                        Either.right(Map.of(
+                                1, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.75f)),
+                                2, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.9f)),
+                                3, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 1f),
+                                        new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SALT.get()), 0.25f)))),
                         1f),
                 null);
 

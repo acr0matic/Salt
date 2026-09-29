@@ -51,3 +51,10 @@ type="optional"
 versionRange="[2.4,)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="spelunkery"
+type="optional"
+versionRange="[0.4,)"
+ordering="AFTER"
+side="BOTH"

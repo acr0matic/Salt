@@ -8,13 +8,27 @@
       "water_type": "sea"
     }
   },
-  "results": [
-    {
-      "item": "salt:salt"
-    },
-    {
-      "chance": 0.25,
-      "item": "salt:salt"
-    }
-  ]
+  "results": {
+    "1": [
+      {
+        "chance": 0.75,
+        "item": "salt:salt"
+      }
+    ],
+    "2": [
+      {
+        "chance": 0.9,
+        "item": "salt:salt"
+      }
+    ],
+    "3": [
+      {
+        "item": "salt:salt"
+      },
+      {
+        "chance": 0.25,
+        "item": "salt:salt"
+      }
+    ]
+  }
 }
