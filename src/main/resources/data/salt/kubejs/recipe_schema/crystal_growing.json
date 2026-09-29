@@ -1,0 +1,38 @@
+{
+	"keys": [
+		{
+			"name": "stages",
+			"role": "output",
+			"type": {
+				"type": "list",
+				"component": "block"
+			}
+		},
+		{
+			"name": "fluid",
+			"role": "input",
+			"type": "fluid_ingredient"
+		},
+		{
+			"name": "base",
+			"role": "input",
+			"type": {
+				"type": "either",
+				"left": "block",
+				"right": "hashed_block_tag"
+			}
+		},
+		{
+			"name": "chance",
+			"role": "other",
+			"type": "non_negative_float",
+			"default_optional": true
+		}
+	],
+	"constructors": [
+		{
+			"keys": ["stages", "fluid", "base"]
+		}
+	],
+	"unique": ["stages"]
+}

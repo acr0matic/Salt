@@ -1,6 +1,8 @@
 {
   "type": "salt:evaporation",
-  "input": "minecraft:water_cauldron",
+  "fluid": {
+    "fluid": "minecraft:water"
+  },
   "result": {
     "Name": "salt:salt_cauldron",
     "Properties": {

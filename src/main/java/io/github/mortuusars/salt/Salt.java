@@ -68,6 +68,7 @@ import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.util.DeferredSoundType;
 import net.neoforged.neoforge.fluids.BaseFlowingFluid;
 import net.neoforged.neoforge.fluids.FluidType;
+import net.neoforged.neoforge.fluids.RegisterCauldronFluidContentEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
@@ -96,6 +97,8 @@ public class Salt {
         Advancements.TRIGGERS.register(modEventBus);
 
         modEventBus.addListener(CommonEvents::onCommonSetup);
+        modEventBus.addListener((RegisterCauldronFluidContentEvent event) ->
+                event.register(Blocks.SEA_WATER_CAULDRON.get(), Fluids.SEA_WATER.get(), 1000, LayeredCauldronBlock.LEVEL));
         NeoForge.EVENT_BUS.register(SeaWaterEvents.class);
     }
 

@@ -1,0 +1,81 @@
+{
+	"keys": [
+		{
+			"name": "result",
+			"role": "output",
+			"type": "block_state"
+		},
+		{
+			"name": "fluid",
+			"role": "input",
+			"type": "fluid_ingredient"
+		},
+		{
+			"name": "results",
+			"role": "output",
+			"type": {
+				"type": "either",
+				"left": {
+					"type": "list",
+					"component": {
+						"type": "custom_object",
+						"keys": [
+							{
+								"name": "item",
+								"component": "id"
+							},
+							{
+								"name": "count",
+								"component": "non_negative_int",
+								"optional": true
+							},
+							{
+								"name": "chance",
+								"component": "non_negative_float",
+								"optional": true
+							}
+						]
+					}
+				},
+				"right": {
+					"type": "map",
+					"key": "string",
+					"component": {
+						"type": "list",
+						"component": {
+							"type": "custom_object",
+							"keys": [
+								{
+									"name": "item",
+									"component": "id"
+								},
+								{
+									"name": "count",
+									"component": "non_negative_int",
+									"optional": true
+								},
+								{
+									"name": "chance",
+									"component": "non_negative_float",
+									"optional": true
+								}
+							]
+						}
+					}
+				}
+			}
+		},
+		{
+			"name": "chance",
+			"role": "other",
+			"type": "non_negative_float",
+			"default_optional": true
+		}
+	],
+	"constructors": [
+		{
+			"keys": ["result", "fluid", "results"]
+		}
+	],
+	"unique": ["result"]
+}

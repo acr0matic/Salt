@@ -43,7 +43,7 @@ public class Recipes extends RecipeProvider {
 
         recipeOutput.accept(Salt.resource("evaporation/sand_from_water"),
                 new EvaporationRecipe(
-                        HolderSet.direct(BuiltInRegistries.BLOCK.wrapAsHolder(Blocks.WATER_CAULDRON)),
+                        FluidIngredient.single(Fluids.WATER),
                         Salt.Blocks.SALT_CAULDRON.get().defaultBlockState(),
                         Either.right(Map.of(
                                 1, List.of(new EvaporationRecipe.Drop(new ItemStack(Salt.Items.SAND_PIECE.get()), 0.75f)),
@@ -55,7 +55,7 @@ public class Recipes extends RecipeProvider {
 
         recipeOutput.accept(Salt.resource("evaporation/salt_from_sea_water"),
                 new EvaporationRecipe(
-                        HolderSet.direct(BuiltInRegistries.BLOCK.wrapAsHolder(Salt.Blocks.SEA_WATER_CAULDRON.get())),
+                        FluidIngredient.single(Salt.Fluids.SEA_WATER.get()),
                         Salt.Blocks.SALT_CAULDRON.get().defaultBlockState()
                                 .setValue(SaltCauldronBlock.WATER_TYPE, SaltCauldronBlock.WaterType.SEA),
                         Either.right(Map.of(

@@ -17,24 +17,21 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.ChatFormatting;
-import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LayeredCauldronBlock;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.CauldronFluidContent;
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class SaltEvaporationCategory implements IRecipeCategory<RecipeHolder<EvaporationRecipe>> {
@@ -80,15 +77,18 @@ public class SaltEvaporationCategory implements IRecipeCategory<RecipeHolder<Eva
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull RecipeHolder<EvaporationRecipe> holder, @NotNull IFocusGroup focuses) {
         EvaporationRecipe recipe = holder.value();
 
-        List<Fluid> inputFluids = new ArrayList<>();
-        recipe.input().forEach(h -> fluidFor(h.value()).ifPresent(fluid -> {
-            if (!inputFluids.contains(fluid))
-                inputFluids.add(fluid);
-        }));
-        if (!inputFluids.isEmpty()) {
+        if (!recipe.fluid().isEmpty()) {
             var slot = builder.addSlot(RecipeIngredientRole.INPUT, 29, 14)
-                    .setStandardSlotBackground();
-            inputFluids.forEach(fluid -> slot.addFluidStack(fluid, 1000));
+                    .setStandardSlotBackground()
+                    // Ёмкость = объёму, чтобы жидкость заполняла слот целиком,
+                    // а не полоской пропорционально дефолтной вместимости.
+                    .setFluidRenderer(1000, false, 16, 16);
+            // Теги разворачиваются в source + flowing; у них один FluidType,
+            // поэтому показываем жидкость один раз, а не дубль с пустышкой.
+            Set<FluidType> seenTypes = new HashSet<>();
+            for (var stack : recipe.fluid().getStacks())
+                if (seenTypes.add(stack.getFluidType()))
+                    slot.addFluidStack(stack.getFluid(), 1000);
         }
 
         List<ItemStack> resultBlocks = List.of(new ItemStack(recipe.result().getBlock()));
@@ -125,17 +125,6 @@ public class SaltEvaporationCategory implements IRecipeCategory<RecipeHolder<Eva
                                         })));
     }
 
-    /**
-     * Liquid shown over the painted cauldron, marking the fluid type of the recipe input.
-     */
-    private static Optional<Fluid> fluidFor(Block block) {
-        if (block == Blocks.WATER_CAULDRON)
-            return Optional.of(Fluids.WATER);
-        if (block == Salt.Blocks.SEA_WATER_CAULDRON.get())
-            return Optional.of(Salt.Fluids.SEA_WATER.get());
-        return Optional.empty();
-    }
-
     private static void addUniqueDrop(List<ItemStack> drops, EvaporationRecipe.Drop drop) {
         if (drops.stream().noneMatch(stack -> ItemStack.isSameItemSameComponents(stack, drop.item())))
             drops.add(drop.item());
@@ -147,11 +136,14 @@ public class SaltEvaporationCategory implements IRecipeCategory<RecipeHolder<Eva
     }
 
     private static int maxLevelOf(EvaporationRecipe recipe, TreeMap<Integer, ?> byLevel) {
-        int max = byLevel.lastKey();
-        for (Holder<Block> holder : recipe.input())
-            if (holder.value().defaultBlockState().hasProperty(LayeredCauldronBlock.LEVEL))
-                max = Math.max(max, Collections.max(LayeredCauldronBlock.LEVEL.getPossibleValues()));
-        return max;
+        int max = byLevel.isEmpty() ? 0 : byLevel.lastKey();
+        // Максимальный уровень заполнения берём из данных о содержимом котла;
+        // если жидкость ни в один котёл не зарегистрирована — считаем, что 3.
+        for (var stack : recipe.fluid().getStacks()) {
+            CauldronFluidContent content = CauldronFluidContent.getForFluid(stack.getFluid());
+            max = Math.max(max, content != null ? content.maxLevel : 3);
+        }
+        return Math.max(max, 1);
     }
 
     /**

@@ -21,10 +21,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.neoforge.fluids.FluidType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SaltCrystalGrowingCategory implements IRecipeCategory<RecipeHolder<CrystalGrowingRecipe>> {
     public static final ResourceLocation UID = Salt.resource("salt_crystal_growing");
@@ -43,8 +46,15 @@ public class SaltCrystalGrowingCategory implements IRecipeCategory<RecipeHolder<
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull RecipeHolder<CrystalGrowingRecipe> holder, @NotNull IFocusGroup focuses) {
         CrystalGrowingRecipe recipe = holder.value();
 
+        // Теги разворачиваются в source + flowing; у них один FluidType,
+        // поэтому показываем жидкость один раз, а не дубль с пустышкой.
+        Set<FluidType> seenTypes = new HashSet<>();
+        var fluids = Arrays.stream(recipe.fluid().getStacks())
+                .filter(stack -> seenTypes.add(stack.getFluidType()))
+                .toList();
+
         builder.addSlot(RecipeIngredientRole.INPUT, 104, 8)
-                .addIngredients(NeoForgeTypes.FLUID_STACK, Arrays.asList(recipe.fluid().getStacks()));
+                .addIngredients(NeoForgeTypes.FLUID_STACK, fluids);
 
         builder.addSlot(RecipeIngredientRole.INPUT, 104, 37)
                 .addItemStack(new ItemStack(Items.DRIPSTONE_BLOCK));

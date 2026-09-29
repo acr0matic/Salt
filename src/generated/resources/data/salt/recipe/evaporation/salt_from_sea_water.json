@@ -1,6 +1,8 @@
 {
   "type": "salt:evaporation",
-  "input": "salt:sea_water_cauldron",
+  "fluid": {
+    "fluid": "salt:sea_water"
+  },
   "result": {
     "Name": "salt:salt_cauldron",
     "Properties": {

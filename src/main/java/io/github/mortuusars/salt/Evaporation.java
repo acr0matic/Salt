@@ -9,8 +9,9 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.fluids.CauldronFluidContent;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.Property;
 import org.jetbrains.annotations.Nullable;
@@ -57,12 +58,13 @@ public class Evaporation {
     }
 
     /**
-     * Cauldrons whose contents can boil away over a heat source — vanilla water
-     * and our sea water. Used for the boiling hurt/bubble visuals.
+     * Cauldrons whose contents can boil away over a heat source — any cauldron
+     * holding a real fluid except lava (lava does its own damage).
+     * Used for the boiling hurt/bubble visuals.
      */
     public static boolean isBoilingLiquidCauldron(BlockState state) {
-        return state.is(Blocks.WATER_CAULDRON)
-                || state.is(Salt.Blocks.SEA_WATER_CAULDRON.get());
+        CauldronFluidContent content = CauldronFluidContent.getForBlock(state.getBlock());
+        return content != null && content.fluid != Fluids.LAVA && content.fluid != Fluids.EMPTY;
     }
 
     public static void onWaterCauldronAnimateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

@@ -7,10 +7,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.mortuusars.salt.Salt;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.HolderSet;
-import net.minecraft.core.RegistryCodecs;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -22,6 +19,9 @@ import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.neoforge.fluids.CauldronFluidContent;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.FluidIngredient;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
@@ -34,7 +34,7 @@ import java.util.Map;
  * <pre>
  * {
  *   "type": "salt:evaporation",
- *   "input": "minecraft:water_cauldron",
+ *   "fluid": "minecraft:water",
  *   "result": {
  *     "Name": "salt:salt_cauldron",
  *     "Properties": {"level": "1", "water_type": "normal"}
@@ -94,21 +94,25 @@ public class EvaporationRecipe implements Recipe<EvaporationRecipe.Input> {
     public static final Codec<Either<List<Drop>, Map<Integer, List<Drop>>>> RESULTS_CODEC =
             Codec.either(Drop.CODEC.listOf(), PER_LEVEL_CODEC);
 
-    private final HolderSet<Block> input;
+    private final FluidIngredient fluid;
     private final BlockState result;
     private final Either<List<Drop>, Map<Integer, List<Drop>>> results;
     private final float chance;
 
-    public EvaporationRecipe(HolderSet<Block> input, BlockState result,
+    public EvaporationRecipe(FluidIngredient fluid, BlockState result,
                              Either<List<Drop>, Map<Integer, List<Drop>>> results, float chance) {
-        this.input = input;
+        this.fluid = fluid;
         this.result = result;
         this.results = results;
         this.chance = chance;
     }
 
-    public HolderSet<Block> input() {
-        return input;
+    /**
+     * Fluid(s) that can evaporate into the result, matched against the cauldron
+     * contents resolved via {@link CauldronFluidContent}.
+     */
+    public FluidIngredient fluid() {
+        return fluid;
     }
 
     public BlockState result() {
@@ -132,7 +136,8 @@ public class EvaporationRecipe implements Recipe<EvaporationRecipe.Input> {
 
     @Override
     public boolean matches(@NotNull Input input, @NotNull Level level) {
-        return this.input.contains(input.state().getBlockHolder());
+        CauldronFluidContent content = CauldronFluidContent.getForBlock(input.state().getBlock());
+        return content != null && fluid.test(new FluidStack(content.fluid, 1));
     }
 
     @Override
@@ -162,14 +167,14 @@ public class EvaporationRecipe implements Recipe<EvaporationRecipe.Input> {
 
     public static class Serializer implements RecipeSerializer<EvaporationRecipe> {
         private static final MapCodec<EvaporationRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                RegistryCodecs.homogeneousList(Registries.BLOCK).fieldOf("input").forGetter(recipe -> recipe.input),
+                FluidIngredient.CODEC_NON_EMPTY.fieldOf("fluid").forGetter(recipe -> recipe.fluid),
                 BlockState.CODEC.fieldOf("result").forGetter(recipe -> recipe.result),
                 RESULTS_CODEC.fieldOf("results").forGetter(recipe -> recipe.results),
                 Codec.FLOAT.optionalFieldOf("chance", 1f).forGetter(recipe -> recipe.chance)
         ).apply(instance, EvaporationRecipe::new));
 
         private static final StreamCodec<RegistryFriendlyByteBuf, EvaporationRecipe> STREAM_CODEC = StreamCodec.composite(
-                ByteBufCodecs.holderSet(Registries.BLOCK), recipe -> recipe.input,
+                FluidIngredient.STREAM_CODEC, recipe -> recipe.fluid,
                 ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY), recipe -> recipe.result,
                 ByteBufCodecs.either(
                         Drop.STREAM_CODEC.apply(ByteBufCodecs.list()),

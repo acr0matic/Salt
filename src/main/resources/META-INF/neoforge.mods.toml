@@ -58,3 +58,10 @@ type="optional"
 versionRange="[0.4,)"
 ordering="AFTER"
 side="BOTH"
+
+[[dependencies.${mod_id}]]
+modId="kubejs"
+type="optional"
+versionRange="[2101.7,)"
+ordering="AFTER"
+side="BOTH"
