@@ -10,6 +10,8 @@ import io.github.mortuusars.salt.block.SaltSandBlock;
 import io.github.mortuusars.salt.configuration.Configuration;
 import io.github.mortuusars.salt.crafting.recipe.SaltingRecipe;
 import io.github.mortuusars.salt.event.CommonEvents;
+import io.github.mortuusars.salt.fluid.SeaWaterBucketItem;
+import io.github.mortuusars.salt.fluid.SeaWaterEvents;
 import io.github.mortuusars.salt.item.SaltItem;
 import io.github.mortuusars.salt.world.feature.MineralDepositFeature;
 import io.github.mortuusars.salt.world.feature.configurations.MineralDepositConfiguration;
@@ -25,6 +27,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.random.SimpleWeightedRandomList;
 import net.minecraft.world.entity.EntityType;
@@ -33,9 +36,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraft.world.level.block.LayeredCauldronBlock;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
@@ -52,13 +54,20 @@ import net.minecraft.world.level.levelgen.placement.PlacedFeature;
 import net.minecraft.world.level.levelgen.placement.PlacementModifier;
 import net.minecraft.world.level.levelgen.placement.RarityFilter;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.common.SoundActions;
 import net.neoforged.neoforge.common.util.DeferredSoundType;
+import net.neoforged.neoforge.fluids.BaseFlowingFluid;
+import net.neoforged.neoforge.fluids.FluidType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -72,6 +81,8 @@ public class Salt {
         modEventBus.addListener(Configuration::onConfigLoad);
         modEventBus.addListener(Configuration::onConfigReload);
 
+        FluidTypes.FLUID_TYPES.register(modEventBus);
+        Fluids.FLUIDS.register(modEventBus);
         Blocks.BLOCKS.register(modEventBus);
         Items.ITEMS.register(modEventBus);
         Sounds.SOUNDS.register(modEventBus);
@@ -81,6 +92,7 @@ public class Salt {
         Advancements.TRIGGERS.register(modEventBus);
 
         modEventBus.addListener(CommonEvents::onCommonSetup);
+        NeoForge.EVENT_BUS.register(SeaWaterEvents.class);
     }
 
     public static MutableComponent translate(String key, Object... args) {
@@ -95,8 +107,46 @@ public class Salt {
         DispenserBlock.registerBehavior(Items.SALT.get(), Melting.SALT_DISPENSER_BEHAVIOR);
     }
 
+    public static class FluidTypes {
+        private static final DeferredRegister<FluidType> FLUID_TYPES = DeferredRegister.create(NeoForgeRegistries.Keys.FLUID_TYPES, Salt.ID);
+
+        public static final DeferredHolder<FluidType, FluidType> SEA_WATER = FLUID_TYPES.register("sea_water", () -> new FluidType(
+                FluidType.Properties.create()
+                        .descriptionId("fluid.salt.sea_water")
+                        .canConvertToSource(false)
+                        .canHydrate(false)
+                        .canSwim(true)
+                        .canDrown(true)
+                        .canExtinguish(true)
+                        .supportsBoating(true)
+                        .density(1000)
+                        .viscosity(1000)
+                        .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
+                        .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)));
+    }
+
+    public static class Fluids {
+        private static final DeferredRegister<Fluid> FLUIDS = DeferredRegister.create(Registries.FLUID, Salt.ID);
+
+        public static final DeferredHolder<Fluid, FlowingFluid> SEA_WATER = FLUIDS.register("sea_water",
+                () -> new BaseFlowingFluid.Source(seaWaterProperties()));
+        public static final DeferredHolder<Fluid, FlowingFluid> FLOWING_SEA_WATER = FLUIDS.register("flowing_sea_water",
+                () -> new BaseFlowingFluid.Flowing(seaWaterProperties()));
+
+        private static BaseFlowingFluid.Properties seaWaterProperties() {
+            return new BaseFlowingFluid.Properties(FluidTypes.SEA_WATER,
+                    () -> SEA_WATER.get(), () -> FLOWING_SEA_WATER.get())
+                    .block(() -> Blocks.SEA_WATER.get())
+                    .bucket(() -> Items.SEA_WATER_BUCKET.get());
+        }
+    }
+
     public static class Blocks {
         private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Salt.ID);
+
+        public static final DeferredHolder<Block, LiquidBlock> SEA_WATER = BLOCKS.register("sea_water",
+                () -> new LiquidBlock(Fluids.SEA_WATER.get(), BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.WATER)));
+
 
         public static final DeferredHolder<Block, SaltSandBlock> SALT_BLOCK = BLOCKS.register("salt_block",
                 () -> new SaltSandBlock(0xe7d5cf, BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.SAND)
@@ -160,6 +210,8 @@ public class Salt {
         private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Salt.ID);
         public static final DeferredHolder<Item, SaltItem> SALT = ITEMS.register("salt", () -> new SaltItem(new Item.Properties()));
         public static final DeferredHolder<Item, Item> RAW_ROCK_SALT = ITEMS.register("raw_rock_salt", () -> new Item(new Item.Properties()));
+        public static final DeferredHolder<Item, SeaWaterBucketItem> SEA_WATER_BUCKET = ITEMS.register("sea_water_bucket",
+                () -> new SeaWaterBucketItem(Fluids.SEA_WATER.get(), new Item.Properties().stacksTo(1)));
 
         public static final DeferredHolder<Item, BlockItem> SALT_BLOCK = ITEMS.register("salt_block",
                 () -> new BlockItem(Salt.Blocks.SALT_BLOCK.get(), new Item.Properties()));
@@ -264,6 +316,7 @@ public class Salt {
 
     public static class BiomeTags {
         public static final TagKey<Biome> HAS_ROCK_SALT_DEPOSITS = TagKey.create(Registries.BIOME, Salt.resource("has_rock_salt_deposits"));
+        public static final TagKey<Biome> SEA_WATER_SOURCE = TagKey.create(Registries.BIOME, Salt.resource("sea_water_source"));
     }
 
     public static class EntityTypes {

@@ -75,7 +75,7 @@ public class SaltJeiPlugin implements IModPlugin {
         return Configuration.JEI_SALT_EVAPORATION_ENABLED.get()
                 && Configuration.EVAPORATION_ENABLED.get()
                 && Configuration.EVAPORATION_CHANCE.get() > 0.0d
-                && !BuiltInRegistries.BLOCK.getTag(Salt.BlockTags.HEATERS).isPresent();
+                && BuiltInRegistries.BLOCK.getTag(Salt.BlockTags.HEATERS).map(heaters -> heaters.size() > 0).orElse(false);
     }
 
     private boolean isSaltCrystalGrowingEnabled() {

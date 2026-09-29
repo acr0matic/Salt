@@ -4,9 +4,13 @@ import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.Salting;
 import io.github.mortuusars.salt.client.LangKeys;
 import io.github.mortuusars.salt.client.rendering.LayeredBakedModel;
+import io.github.mortuusars.salt.fluid.SeaWaterVisuals;
 import io.github.mortuusars.salt.integration.AppleSkinHandler;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.world.item.CreativeModeTabs;
@@ -14,6 +18,8 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.ModelEvent;
+import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -23,7 +29,7 @@ import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
 import java.util.List;
 
-@EventBusSubscriber(modid = Salt.ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = Salt.ID, value = Dist.CLIENT)
 public class ClientEvents {
 
     @SubscribeEvent
@@ -31,6 +37,7 @@ public class ClientEvents {
         if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
             event.accept(Salt.Items.SALT.get());
             event.accept(Salt.Items.RAW_ROCK_SALT.get());
+            event.accept(Salt.Items.SEA_WATER_BUCKET.get());
         }
 
         if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
@@ -50,7 +57,11 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
-    public static void onClientSetup(FMLClientSetupEvent ignoredEvent) {
+    public static void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            ItemBlockRenderTypes.setRenderLayer(Salt.Fluids.SEA_WATER.get(), RenderType.translucent());
+            ItemBlockRenderTypes.setRenderLayer(Salt.Fluids.FLOWING_SEA_WATER.get(), RenderType.translucent());
+        });
         NeoForge.EVENT_BUS.addListener(ClientEvents::onItemTooltipEvent);
         if (ModList.get().isLoaded("appleskin"))
             NeoForge.EVENT_BUS.register(new AppleSkinHandler());
@@ -59,6 +70,27 @@ public class ClientEvents {
     @SubscribeEvent
     public static void registerModels(ModelEvent.RegisterAdditional event) {
         event.register(net.minecraft.client.resources.model.ModelResourceLocation.standalone(Salt.resource("item/salted_overlay")));
+    }
+
+    @SubscribeEvent
+    public static void registerFluidRendering(RegisterClientExtensionsEvent event) {
+        event.registerFluidType(new IClientFluidTypeExtensions() {
+            @Override
+            public ResourceLocation getStillTexture() {
+                return ResourceLocation.fromNamespaceAndPath("minecraft", "block/water_still");
+            }
+
+            @Override
+            public ResourceLocation getFlowingTexture() {
+                return ResourceLocation.fromNamespaceAndPath("minecraft", "block/water_flow");
+            }
+
+            @Override
+            public int getTintColor() {
+                return SeaWaterVisuals.fluidColor();
+            }
+        }, Salt.FluidTypes.SEA_WATER.get());
+
     }
 
     @SubscribeEvent

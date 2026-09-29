@@ -77,6 +77,7 @@ public class BlockStatesAndModels extends BlockStateProvider {
                 .build());
 
         simpleBlock(Salt.Blocks.SALT_BLOCK.get());
+        simpleBlock(Salt.Blocks.SEA_WATER.get(), models().getExistingFile(mcLoc("block/water")));
 
         BlockModelBuilder rawRockSaltBlock = models().cubeAll(Salt.Blocks.RAW_ROCK_SALT_BLOCK.getId()
                 .getPath(), blockTexture(Salt.Blocks.RAW_ROCK_SALT_BLOCK.get()));

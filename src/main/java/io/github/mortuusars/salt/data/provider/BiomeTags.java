@@ -4,6 +4,7 @@ import io.github.mortuusars.salt.Salt;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BiomeTagsProvider;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import org.jetbrains.annotations.NotNull;
@@ -22,5 +23,12 @@ public class BiomeTags extends BiomeTagsProvider {
                 .addTag(net.minecraft.tags.BiomeTags.IS_OCEAN)
                 .addTag(net.minecraft.tags.BiomeTags.IS_BEACH)
                 .add(Biomes.DRIPSTONE_CAVES);
+
+        tag(Salt.BiomeTags.SEA_WATER_SOURCE)
+                .addTag(net.minecraft.tags.BiomeTags.IS_OCEAN)
+                .addTag(net.minecraft.tags.BiomeTags.IS_BEACH)
+                .addOptional(ResourceLocation.fromNamespaceAndPath("spawn", "deep_warm_ocean"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("spawn", "seagrass_meadow"))
+                .addOptional(ResourceLocation.fromNamespaceAndPath("regions_unexplored", "rocky_reef"));
     }
 }

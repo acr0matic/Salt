@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@EventBusSubscriber(modid = Salt.ID, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Salt.ID)
 public class DataGeneration
 {
     @SubscribeEvent

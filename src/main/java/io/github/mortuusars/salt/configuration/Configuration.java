@@ -55,6 +55,12 @@ public class Configuration {
 
     public static final ModConfigSpec.BooleanValue SALTED_OVERLAY_ENABLED;
 
+    // Sea Water:
+    public static final ModConfigSpec.IntValue SEA_WATER_MARINE_TINT_STRENGTH;
+    public static final ModConfigSpec.IntValue SEA_WATER_MARINE_TINT_RADIUS;
+    public static final ModConfigSpec.ConfigValue<String> SEA_WATER_TINT_COLOR;
+    public static final ModConfigSpec.IntValue SEA_WATER_OPACITY;
+
     // JEI:
     public static final ModConfigSpec.BooleanValue JEI_SALT_EVAPORATION_ENABLED;
     public static final ModConfigSpec.BooleanValue JEI_SALT_CRYSTAL_GROWING_ENABLED;
@@ -213,6 +219,31 @@ public class Configuration {
         SALTED_OVERLAY_ENABLED = builder
                 .comment("Overlay texture will be drawn over salted foods. Disable if there's an issue with rendering items.")
                 .define("SaltingOverlayEnabled", true);
+
+        builder.pop();
+
+        builder.push("SeaWater");
+
+        SEA_WATER_MARINE_TINT_STRENGTH = builder
+                .comment("How strongly regular water is tinted towards 'SeaWaterTintColor' in sea biomes (tag 'salt:sea_water_source').",
+                        "0 = vanilla water colors, 100 = full sea water color.")
+                .defineInRange("SeaWaterMarineTintStrength", 35, 0, 100);
+
+        SEA_WATER_MARINE_TINT_RADIUS = builder
+                .comment("Radius in blocks over which the sea tint fades outward into regular water.",
+                        "Blocks inside a sea biome always get the full tint, so scooped sea water stays readable.",
+                        "0 = hard tint boundary at the biome edge.")
+                .defineInRange("SeaWaterMarineTintRadius", 8, 0, 32);
+
+        SEA_WATER_TINT_COLOR = builder
+                .comment("Color used for sea water tinting, RGB hex (with or without '#').",
+                        "Applied to 'salt:sea_water' fluid and blended into regular water in sea biomes.")
+                .define("SeaWaterTintColor", "#2E7D9E",
+                        o -> o instanceof String s && s.matches("#?[0-9a-fA-F]{6}"));
+
+        SEA_WATER_OPACITY = builder
+                .comment("Opacity of 'salt:sea_water' fluid. 100 = fully opaque, 0 = fully transparent.")
+                .defineInRange("SeaWaterOpacity", 90, 0, 100);
 
         builder.pop();
 
