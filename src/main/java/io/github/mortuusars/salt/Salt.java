@@ -9,6 +9,8 @@ import io.github.mortuusars.salt.block.SaltClusterBlock;
 import io.github.mortuusars.salt.block.SaltSandBlock;
 import io.github.mortuusars.salt.configuration.Configuration;
 import io.github.mortuusars.salt.crafting.recipe.SaltingRecipe;
+import io.github.mortuusars.salt.recipe.CrystalGrowingRecipe;
+import io.github.mortuusars.salt.recipe.EvaporationRecipe;
 import io.github.mortuusars.salt.event.CommonEvents;
 import io.github.mortuusars.salt.fluid.SeaWaterBucketItem;
 import io.github.mortuusars.salt.fluid.SeaWaterEvents;
@@ -34,6 +36,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -88,6 +91,7 @@ public class Salt {
         Sounds.SOUNDS.register(modEventBus);
         EntityTypes.ENTITY_TYPES.register(modEventBus);
         RecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
+        RecipeTypes.RECIPE_TYPES.register(modEventBus);
         WorldGenFeatures.FEATURES.register(modEventBus);
         Advancements.TRIGGERS.register(modEventBus);
 
@@ -327,6 +331,18 @@ public class Salt {
         private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS = DeferredRegister.create(BuiltInRegistries.RECIPE_SERIALIZER, Salt.ID);
         public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<SaltingRecipe>> SALTING =
                 RECIPE_SERIALIZERS.register("salting", SaltingRecipe.Serializer::new);
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<EvaporationRecipe>> EVAPORATION =
+                RECIPE_SERIALIZERS.register("evaporation", EvaporationRecipe.Serializer::new);
+        public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<CrystalGrowingRecipe>> CRYSTAL_GROWING =
+                RECIPE_SERIALIZERS.register("crystal_growing", CrystalGrowingRecipe.Serializer::new);
+    }
+
+    public static class RecipeTypes {
+        private static final DeferredRegister<RecipeType<?>> RECIPE_TYPES = DeferredRegister.create(BuiltInRegistries.RECIPE_TYPE, Salt.ID);
+        public static final DeferredHolder<RecipeType<?>, RecipeType<EvaporationRecipe>> EVAPORATION =
+                RECIPE_TYPES.register("evaporation", () -> RecipeType.simple(Salt.resource("evaporation")));
+        public static final DeferredHolder<RecipeType<?>, RecipeType<CrystalGrowingRecipe>> CRYSTAL_GROWING =
+                RECIPE_TYPES.register("crystal_growing", () -> RecipeType.simple(Salt.resource("crystal_growing")));
     }
 
     public static class WorldGenFeatures {

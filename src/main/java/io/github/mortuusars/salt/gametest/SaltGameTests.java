@@ -1,17 +1,25 @@
 package io.github.mortuusars.salt.gametest;
 
+import io.github.mortuusars.salt.Evaporation;
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.Salting;
+import io.github.mortuusars.salt.recipe.CrystalGrowingRecipe;
+import io.github.mortuusars.salt.recipe.EvaporationRecipe;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.block.Blocks;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
+
+import java.util.Optional;
 
 @GameTestHolder(Salt.ID)
 @PrefixGameTestTemplate(false)
@@ -51,6 +59,35 @@ public class SaltGameTests {
         NeoForge.EVENT_BUS.post(new LivingEntityUseItemEvent.Finish(player, preUseStack, 0, result));
 
         helper.assertValueEqual(player.getFoodData().getFoodLevel(), 15, "food level");
+        helper.succeed();
+    }
+
+    // The default evaporation datapack recipe must match a water cauldron and produce the salt cauldron.
+    @GameTest(template = "empty")
+    public static void evaporationRecipeMatchesWaterCauldron(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+
+        Optional<RecipeHolder<EvaporationRecipe>> recipe =
+                Evaporation.findRecipe(level, Blocks.WATER_CAULDRON.defaultBlockState());
+
+        helper.assertTrue(recipe.isPresent(), "No evaporation recipe for water cauldron");
+        helper.assertValueEqual(recipe.get().value().result().getBlock(), Salt.Blocks.SALT_CAULDRON.get(), "evaporation result");
+        helper.succeed();
+    }
+
+    // The default crystal growing recipe must accept the growables-tag base and advance air into the first stage.
+    @GameTest(template = "empty")
+    public static void crystalGrowingRecipeAdvancesStages(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+
+        Optional<RecipeHolder<CrystalGrowingRecipe>> recipe = level.getRecipeManager()
+                .getAllRecipesFor(Salt.RecipeTypes.CRYSTAL_GROWING.get()).stream().findFirst();
+
+        helper.assertTrue(recipe.isPresent(), "No crystal growing recipes loaded");
+        helper.assertTrue(recipe.get().value().matchesBaseAndStage(
+                        Salt.Blocks.RAW_ROCK_SALT_BLOCK.get().defaultBlockState(), Blocks.AIR.defaultBlockState()),
+                "base+air should match");
+        helper.assertValueEqual(recipe.get().value().stages().get(0), Salt.Blocks.SMALL_SALT_BUD.get(), "first stage");
         helper.succeed();
     }
 }

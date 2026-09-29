@@ -1,0 +1,13 @@
+{
+  "type": "salt:crystal_growing",
+  "base": "#salt:salt_cluster_growables",
+  "fluid": {
+    "fluid": "minecraft:water"
+  },
+  "stages": [
+    "salt:small_salt_bud",
+    "salt:medium_salt_bud",
+    "salt:large_salt_bud",
+    "salt:salt_cluster"
+  ]
+}

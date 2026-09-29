@@ -12,9 +12,17 @@ public class LangKeys {
     public static final String ADVANCEMENT_CRYSTAL_GARDEN_DESCRIPTION = "salt.advancement.crystal_garden.description";
 
     public static final String JEI_CATEGORY_SALT_CRYSTAL_GROWING = "gui.jei.category.salt_crystal_growing";
+    public static final String JEI_CATEGORY_SALT_CRYSTAL_GROWING_DRIP_CHANCE_TOOLTIP = "gui.jei.category.salt_crystal_growing.drip_chance.tooltip";
+    public static final String JEI_CATEGORY_SALT_CRYSTAL_GROWING_TIME_SECONDS_TOOLTIP = "gui.jei.category.salt_crystal_growing.time_seconds.tooltip";
     public static final String JEI_CATEGORY_SALT_EVAPORATION = "gui.jei.category.salt_evaporation";
     public static final String JEI_CATEGORY_SALT_EVAPORATION_HEAT_SOURCE_TOOLTIP = "gui.jei.category.salt_evaporation.heat_source.tooltip";
     public static final String JEI_CATEGORY_SALT_EVAPORATION_HEAT_SOURCE_TOOLTIP_2 = "gui.jei.category.salt_evaporation.heat_source.tooltip_2";
+    public static final String JEI_CATEGORY_SALT_EVAPORATION_FILLED_TOOLTIP = "gui.jei.category.salt_evaporation.filled.tooltip";
+    public static final String JEI_CATEGORY_SALT_EVAPORATION_TIME_SHORT_SECONDS_TOOLTIP = "gui.jei.category.salt_evaporation.time_short_seconds.tooltip";
+    public static final String JEI_CATEGORY_SALT_EVAPORATION_DROP_CHANCE_TOOLTIP = "gui.jei.category.salt_evaporation.drop_chance.tooltip";
+    public static final String JEI_CATEGORY_SALT_EVAPORATION_DROP_CHANCE_EXTRA_TOOLTIP = "gui.jei.category.salt_evaporation.drop_chance_extra.tooltip";
+    public static final String JEI_CATEGORY_SALT_EVAPORATION_DROP_GUARANTEED_TOOLTIP = "gui.jei.category.salt_evaporation.drop_guaranteed.tooltip";
+    public static final String JEI_CATEGORY_SALT_EVAPORATION_DROP_GUARANTEED_COUNT_TOOLTIP = "gui.jei.category.salt_evaporation.drop_guaranteed_count.tooltip";
 
     public static final String SUBTITLES_DISSOLVES = "subtitles.block.salt.salt_dissolve";
     public static final String SUBTITLES_MELTS = "subtitles.block.salt.melt";

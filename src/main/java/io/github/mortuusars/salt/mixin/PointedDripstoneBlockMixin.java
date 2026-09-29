@@ -1,19 +1,16 @@
 package io.github.mortuusars.salt.mixin;
 
-import io.github.mortuusars.salt.Salt;
+import io.github.mortuusars.salt.CrystalGrowing;
 import io.github.mortuusars.salt.block.ISaltBlock;
-import io.github.mortuusars.salt.block.SaltClusterBlock;
 import io.github.mortuusars.salt.configuration.Configuration;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.PointedDripstoneBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,23 +47,14 @@ public abstract class PointedDripstoneBlockMixin {
             if (growableState.getBlock() instanceof ISaltBlock) {
                 level.scheduleTick(growablePos, growableState.getBlock(), delay);
             } else {
-                BlockPos clusterPos = growablePos.above();
-                if (ISaltBlock.canGrowCluster(clusterPos, level)) {
-                    Fluid drippingFluid = ISaltBlock.getFluidDrippingOn(level, clusterPos);
-
-                    if (drippingFluid == Fluids.WATER)
-                        ISaltBlock.growCluster(growableState, growablePos, level);
-                    else if (drippingFluid != Fluids.EMPTY)
-                        level.destroyBlock(clusterPos, false);
-                }
+                CrystalGrowing.tryGrow(growablePos.above(), level);
             }
         }
     }
 
     @Unique
-    private static @Nullable BlockPos salt$findSaltGrowablesBelowStalactiteTip(Level pLevel, BlockPos pPos, Fluid pFluid) {
-        Predicate<BlockState> statePredicate = (state) ->
-                state.is(Salt.BlockTags.SALT_CLUSTER_GROWABLES) || (state.getBlock() instanceof SaltClusterBlock && state.getValue(SaltClusterBlock.FACING) == Direction.UP);
+    private static @Nullable BlockPos salt$findSaltGrowablesBelowStalactiteTip(ServerLevel pLevel, BlockPos pPos, Fluid pFluid) {
+        Predicate<BlockState> statePredicate = (state) -> CrystalGrowing.isGrowableTarget(pLevel, state);
         BiPredicate<BlockPos, BlockState> canDripThroughPredicate = (pos, state) ->
                 PointedDripstoneBlock.canDripThrough(pLevel, pos, state);
         return salt$findBlockVertical(pLevel, pPos, Direction.DOWN.getAxisDirection(), canDripThroughPredicate, statePredicate, 11).orElse(null);

@@ -1,15 +1,14 @@
 package io.github.mortuusars.salt.block;
 
+import io.github.mortuusars.salt.Evaporation;
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.helper.Heater;
+import io.github.mortuusars.salt.recipe.EvaporationRecipe;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.Holder;
 import net.minecraft.core.cauldron.CauldronInteraction;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -39,16 +38,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.storage.loot.LootParams;
-import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 
 public class SaltCauldronBlock extends LayeredCauldronBlock {
@@ -87,32 +79,22 @@ public class SaltCauldronBlock extends LayeredCauldronBlock {
     }
 
     protected void dropContents(ServerLevel level, BlockState state, BlockPos pos) {
-        ResourceKey<LootTable> lootTableKey = ResourceKey.create(Registries.LOOT_TABLE,
-                Salt.resource("cauldron_evaporation/salt_" + getFullnessString(state)));
-        LootTable lootTable = level.getServer().reloadableRegistries().getLootTable(lootTableKey);
-
-        LootParams lootParams = new LootParams.Builder(level)
-                .withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos))
-                .create(LootContextParamSets.EMPTY);
-
-        List<ItemStack> randomItems = lootTable.getRandomItems(lootParams);
-
-        for (ItemStack itemStack : randomItems) {
-            float x = pos.getX() + 0.4f + level.random.nextFloat() * 0.2f;
-            float y = pos.getY() + 0.7f + level.random.nextFloat() * 0.2f;
-            float z = pos.getZ() + 0.4f + level.random.nextFloat() * 0.2f;
-            ItemEntity itemEntity = new ItemEntity(level, x, y, z, itemStack);
-            itemEntity.setPickUpDelay(5);
-            level.addFreshEntity(itemEntity);
-        }
+        int fullness = state.getValue(LEVEL);
+        Evaporation.findRecipeByResult(level, this).ifPresent(holder -> {
+            for (EvaporationRecipe.Drop drop : holder.value().dropsForLevel(fullness)) {
+                if (level.random.nextFloat() <= drop.chance())
+                    spawnDrop(level, pos, drop.item().copy());
+            }
+        });
     }
 
-    protected String getFullnessString(BlockState state) {
-        return switch (state.getValue(LEVEL)) {
-            case 1 -> "level_1";
-            case 2 -> "level_2";
-            default -> "full";
-        };
+    private void spawnDrop(ServerLevel level, BlockPos pos, ItemStack itemStack) {
+        float x = pos.getX() + 0.4f + level.random.nextFloat() * 0.2f;
+        float y = pos.getY() + 0.7f + level.random.nextFloat() * 0.2f;
+        float z = pos.getZ() + 0.4f + level.random.nextFloat() * 0.2f;
+        ItemEntity itemEntity = new ItemEntity(level, x, y, z, itemStack);
+        itemEntity.setPickUpDelay(5);
+        level.addFreshEntity(itemEntity);
     }
 
     @Override

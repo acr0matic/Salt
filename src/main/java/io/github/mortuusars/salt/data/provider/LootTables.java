@@ -5,26 +5,20 @@ import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.data.loot.packs.VanillaBlockLoot;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.ApplyBonusCount;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.predicates.MatchTool;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class LootTables {
@@ -66,35 +60,6 @@ public class LootTables {
                     .filter(entry -> entry.getKey().location().getNamespace().equals(Salt.ID))
                     .map(Map.Entry::getValue)
                     .collect(Collectors.toList());
-        }
-    }
-
-    public static class GameplayLoot implements LootTableSubProvider {
-        public GameplayLoot(HolderLookup.Provider ignoredRegistries) {
-        }
-
-        @Override
-        public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> consumer) {
-            consumer.accept(key("cauldron_evaporation/salt_level_1"), LootTable.lootTable().withPool(
-                    LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                            .add(LootItem.lootTableItem(Salt.Items.SALT.get())
-                                    .when(LootItemRandomChanceCondition.randomChance(0.75f)))));
-
-            consumer.accept(key("cauldron_evaporation/salt_level_2"), LootTable.lootTable().withPool(
-                    LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                            .add(LootItem.lootTableItem(Salt.Items.SALT.get())
-                                    .when(LootItemRandomChanceCondition.randomChance(0.9f)))));
-
-            consumer.accept(key("cauldron_evaporation/salt_full"), LootTable.lootTable()
-                    .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                            .add(LootItem.lootTableItem(Salt.Items.SALT.get())))
-                    .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                            .add(LootItem.lootTableItem(Salt.Items.SALT.get())
-                                    .when(LootItemRandomChanceCondition.randomChance(0.25f)))));
-        }
-
-        private static ResourceKey<LootTable> key(String path) {
-            return ResourceKey.create(Registries.LOOT_TABLE, Salt.resource(path));
         }
     }
 }

@@ -1,5 +1,6 @@
 package io.github.mortuusars.salt.block;
 
+import io.github.mortuusars.salt.CrystalGrowing;
 import io.github.mortuusars.salt.Dissolving;
 import io.github.mortuusars.salt.Melting;
 import io.github.mortuusars.salt.Salt;
@@ -64,8 +65,8 @@ public class SaltClusterBlock extends Block implements ISaltBlock {
                 && !player.isCreative()
                 && Configuration.SALT_CLUSTER_GROWING_ENABLED.get()
                 && state.is(Salt.Blocks.SALT_CLUSTER.get())
-                && level.getBlockState(pos.below()).is(Salt.BlockTags.SALT_CLUSTER_GROWABLES)
-                && ISaltBlock.getFluidDrippingOn(serverLevel, pos) == Fluids.WATER) {
+                && CrystalGrowing.isGrowableBase(serverLevel, level.getBlockState(pos.below()))
+                && CrystalGrowing.getFluidDrippingOn(serverLevel, pos) != Fluids.EMPTY) {
             Salt.Advancements.HARVEST_SALT_CRYSTAL.get().trigger(serverPlayer);
         }
 
@@ -113,14 +114,7 @@ public class SaltClusterBlock extends Block implements ISaltBlock {
 
     @Override
     public void tick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        if (ISaltBlock.canGrowCluster(pos, level)) {
-            Fluid drippingFluid = ISaltBlock.getFluidDrippingOn(level, pos);
-
-            if (drippingFluid == Fluids.WATER)
-                ISaltBlock.growCluster(state, pos.below(), level);
-            else if (drippingFluid != Fluids.EMPTY)
-                level.destroyBlock(pos, false);
-        }
+        CrystalGrowing.tryGrow(pos, level);
     }
 
     public @NotNull VoxelShape getShape(BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {

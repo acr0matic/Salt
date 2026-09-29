@@ -29,8 +29,7 @@ public class DataGeneration
 
         generator.addProvider(event.includeServer(), new Advancements(generator, lookupProvider, helper));
         generator.addProvider(event.includeServer(), new LootTableProvider(packOutput, Collections.emptySet(),
-                List.of(new LootTableProvider.SubProviderEntry(LootTables.BlockLoot::new, LootContextParamSets.BLOCK),
-                        new LootTableProvider.SubProviderEntry(LootTables.GameplayLoot::new, LootContextParamSets.EMPTY)),
+                List.of(new LootTableProvider.SubProviderEntry(LootTables.BlockLoot::new, LootContextParamSets.BLOCK)),
                 lookupProvider));
         generator.addProvider(event.includeServer(), new Recipes(generator, lookupProvider));
         BlockTags blockTags = new BlockTags(generator, lookupProvider, helper);

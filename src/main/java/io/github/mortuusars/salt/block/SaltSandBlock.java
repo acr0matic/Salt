@@ -1,5 +1,6 @@
 package io.github.mortuusars.salt.block;
 
+import io.github.mortuusars.salt.CrystalGrowing;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ColorRGBA;
@@ -9,10 +10,9 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ColoredFallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings({"deprecation", "unused"})
+@SuppressWarnings("unused")
 public class SaltSandBlock extends ColoredFallingBlock implements ISaltBlock {
     private final BlockState dissolvedState;
 
@@ -44,14 +44,6 @@ public class SaltSandBlock extends ColoredFallingBlock implements ISaltBlock {
 
     @Override
     public void tick(@NotNull BlockState state, @NotNull ServerLevel level, @NotNull BlockPos pos, @NotNull RandomSource random) {
-        BlockPos clusterPos = pos.above();
-        if (ISaltBlock.canGrowCluster(clusterPos, level)) {
-            Fluid drippingFluid = ISaltBlock.getFluidDrippingOn(level, clusterPos);
-
-            if (drippingFluid == Fluids.WATER)
-                ISaltBlock.growCluster(state, pos, level);
-            else if (drippingFluid != Fluids.EMPTY)
-                level.destroyBlock(clusterPos, false);
-        }
+        CrystalGrowing.tryGrow(pos.above(), level);
     }
 }
