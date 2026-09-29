@@ -17,8 +17,8 @@ import net.neoforged.neoforge.gametest.PrefixGameTestTemplate;
 @PrefixGameTestTemplate(false)
 public class SaltGameTests {
 
-    // Воспроизводит путь LivingEntity.completeUsingItem: сначала ванильное поедание
-    // (foodData.eat от свойств предмета), затем событие Finish, где мод докидывает бонус за посол.
+    // Replicates the LivingEntity.completeUsingItem path: vanilla eating first
+    // (foodData.eat from the item's food properties), then the Finish event where the mod adds the salting bonus.
     @GameTest(template = "empty")
     public static void saltedFoodGrantsBonusNutrition(GameTestHelper helper) {
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);
@@ -32,12 +32,12 @@ public class SaltGameTests {
         ItemStack result = stack.finishUsingItem(helper.getLevel(), player);
         NeoForge.EVENT_BUS.post(new LivingEntityUseItemEvent.Finish(player, preUseStack, 0, result));
 
-        // Печёная картошка: 5 питательности, 6.0 насыщения. Посол: +2 и +2.0.
+        // Baked potato: 5 nutrition, 6.0 saturation. Salting bonus: +2 and +2.0.
         helper.assertValueEqual(player.getFoodData().getFoodLevel(), 17, "food level");
         helper.succeed();
     }
 
-    // Контрольный тест: обычная еда без посола должна дать ровно ванильные значения.
+    // Control test: regular unsalted food must restore exactly the vanilla values.
     @GameTest(template = "empty")
     public static void unsaltedFoodRestoresVanillaNutrition(GameTestHelper helper) {
         Player player = helper.makeMockPlayer(GameType.SURVIVAL);

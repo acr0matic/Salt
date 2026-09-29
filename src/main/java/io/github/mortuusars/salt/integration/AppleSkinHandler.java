@@ -16,7 +16,7 @@ public class AppleSkinHandler {
         Salting.FoodValue additionalFoodValue = Salting.getAdditionalFoodValue(foodStack);
         FoodProperties foodProperties = event.modifiedFoodProperties;
 
-        // FoodProperties.saturation в 1.21 - уже плоские очки насыщения, а не модификатор.
+        // In 1.21 FoodProperties.saturation is already flat saturation points, not a modifier.
         event.modifiedFoodProperties = new FoodProperties(
                 foodProperties.nutrition() + additionalFoodValue.nutrition(),
                 foodProperties.saturation() + additionalFoodValue.saturation(),

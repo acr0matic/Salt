@@ -2,7 +2,7 @@ package io.github.mortuusars.salt.fluid;
 
 import io.github.mortuusars.salt.configuration.Configuration;
 
-/** Клиентские визуальные настройки морской воды из salt-client.toml. */
+/** Client-side sea water visual settings from salt-client.toml. */
 public final class SeaWaterVisuals {
     private SeaWaterVisuals() {
     }

@@ -8,7 +8,7 @@ import net.minecraft.world.item.component.CustomData;
 
 public class Salting {
 
-    // saturation - плоские очки насыщения (1 = половина шашки), а не модификатор.
+    // saturation - flat saturation points (1 = half a shank), not a modifier.
     public record FoodValue(int nutrition, float saturation) {
         @Override
         public String toString() {

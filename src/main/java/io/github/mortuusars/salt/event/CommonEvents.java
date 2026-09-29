@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 public class CommonEvents {
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
-            // randomTick используется миксином для превращения водяного котла в соляной.
+            // randomTick is used by the mixin to convert a water cauldron into a salt cauldron.
             Blocks.WATER_CAULDRON.isRandomlyTicking = true;
             CauldronInteraction.EMPTY.map().put(Salt.Items.SEA_WATER_BUCKET.get(),
                     (state, level, pos, player, hand, stack) -> CauldronInteraction.emptyBucket(
@@ -31,7 +31,7 @@ public class CommonEvents {
         });
     }
 
-    // Бонусные питательность и насыщение солёной еды докидываются поверх съеденного.
+    // Bonus nutrition and saturation of salted food are added on top of the consumed food.
     public static void onItemUseFinish(LivingEntityUseItemEvent.Finish event) {
         ItemStack stack = event.getItem();
         if (event.getEntity().level().isClientSide()

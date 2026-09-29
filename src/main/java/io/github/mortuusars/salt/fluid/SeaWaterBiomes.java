@@ -30,8 +30,8 @@ public final class SeaWaterBiomes {
                 .orElse(false);
     }
 
-    // Доля морских биомов в горизонтальном круге заданного радиуса вокруг позиции.
-    // Используется только для визуального градиента: правило набора ведром остаётся бинарным.
+    // Fraction of sea biomes in a horizontal circle of the given radius around the position.
+    // Used only for the visual gradient: the bucket pickup rule remains binary.
     public static float marineFraction(Level level, BlockPos pos, int radiusBlocks) {
         if (radiusBlocks <= 0)
             return 0f;

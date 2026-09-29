@@ -34,7 +34,7 @@ public class LiquidBlockRendererMixin {
         if (SeaWaterBiomes.isSeaBiome(level, pos))
             return SeaWaterTint.apply(vanillaColor, seaWaterColor, strength);
 
-        // Пресная вода: тинт затухает наружу от морской границы по доле морских биомов в радиусе.
+        // Fresh water: tint fades outward from the sea boundary by the fraction of sea biomes in the radius.
         float fraction = SeaWaterBiomes.marineFraction(level, pos, SeaWaterVisuals.marineTintRadius());
         int percent = Math.round(strength * fraction);
         return percent > 0 ? SeaWaterTint.apply(vanillaColor, seaWaterColor, percent) : vanillaColor;
