@@ -1,10 +1,10 @@
 package io.github.mortuusars.salt.integration;
 
 import io.github.mortuusars.salt.Salting;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
 import squeek.appleskin.api.event.FoodValuesEvent;
-import squeek.appleskin.api.food.FoodValues;
 
 public class AppleSkinHandler {
     @SubscribeEvent
@@ -14,8 +14,10 @@ public class AppleSkinHandler {
             return;
 
         Salting.FoodValue additionalFoodValue = Salting.getAdditionalFoodValue(foodStack);
-
-        event.modifiedFoodValues = new FoodValues(event.modifiedFoodValues.hunger + additionalFoodValue.nutrition(),
-                event.modifiedFoodValues.saturationModifier + additionalFoodValue.saturationModifier());
+        FoodProperties foodProperties = event.modifiedFoodProperties;
+        event.modifiedFoodProperties = new FoodProperties.Builder()
+                .nutrition(foodProperties.nutrition() + additionalFoodValue.nutrition())
+                .saturationModifier(foodProperties.saturation() + additionalFoodValue.saturationModifier())
+                .build();
     }
 }

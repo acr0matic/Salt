@@ -7,16 +7,16 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.data.event.GatherDataEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-@Mod.EventBusSubscriber(modid = Salt.ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = Salt.ID, bus = EventBusSubscriber.Bus.MOD)
 public class DataGeneration
 {
     @SubscribeEvent
@@ -30,8 +30,9 @@ public class DataGeneration
         generator.addProvider(event.includeServer(), new Advancements(generator, lookupProvider, helper));
         generator.addProvider(event.includeServer(), new LootTableProvider(packOutput, Collections.emptySet(),
                 List.of(new LootTableProvider.SubProviderEntry(LootTables.BlockLoot::new, LootContextParamSets.BLOCK),
-                        new LootTableProvider.SubProviderEntry(LootTables.GameplayLoot::new, LootContextParamSets.EMPTY))));
-        generator.addProvider(event.includeServer(), new Recipes(generator));
+                        new LootTableProvider.SubProviderEntry(LootTables.GameplayLoot::new, LootContextParamSets.EMPTY)),
+                lookupProvider));
+        generator.addProvider(event.includeServer(), new Recipes(generator, lookupProvider));
         BlockTags blockTags = new BlockTags(generator, lookupProvider, helper);
         generator.addProvider(event.includeServer(), blockTags);
         generator.addProvider(event.includeServer(), new ItemTags(generator, lookupProvider, blockTags, helper));

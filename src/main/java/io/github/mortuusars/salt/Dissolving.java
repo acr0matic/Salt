@@ -59,7 +59,7 @@ public class Dissolving {
             if (dissolvedState.isAir())
                 dissolvedState = fluid.defaultFluidState().createLegacyBlock();
             else if (dissolvedState.getBlock() instanceof SimpleWaterloggedBlock waterloggedBlock
-                        && waterloggedBlock.canPlaceLiquid(level, pos, dissolvedState, fluid))
+                        && waterloggedBlock.canPlaceLiquid(null, level, pos, dissolvedState, fluid))
                 dissolvedState = dissolvedState.setValue(BlockStateProperties.WATERLOGGED, true);
         }
 

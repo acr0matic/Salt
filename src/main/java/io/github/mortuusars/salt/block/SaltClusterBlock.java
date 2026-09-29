@@ -66,7 +66,7 @@ public class SaltClusterBlock extends Block implements ISaltBlock {
                 && state.is(Salt.Blocks.SALT_CLUSTER.get())
                 && level.getBlockState(pos.below()).is(Salt.BlockTags.SALT_CLUSTER_GROWABLES)
                 && ISaltBlock.getFluidDrippingOn(serverLevel, pos) == Fluids.WATER) {
-            Salt.Advancements.HARVEST_SALT_CRYSTAL.trigger(serverPlayer);
+            Salt.Advancements.HARVEST_SALT_CRYSTAL.get().trigger(serverPlayer);
         }
 
         return super.onDestroyedByPlayer(state, level, pos, player, willHarvest, fluid);

@@ -3,10 +3,10 @@ package io.github.mortuusars.salt.data.provider;
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.block.SaltCauldronBlock;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.client.model.generators.BlockModelBuilder;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
-import net.minecraftforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.client.model.generators.BlockModelBuilder;
+import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
+import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class BlockStatesAndModels extends BlockStateProvider {
 

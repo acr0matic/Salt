@@ -1,0 +1,93 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Client",
+      "presentation": {
+        "group": "Mod Development - Salt",
+        "order": 0
+      },
+      "projectName": "Salt",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\clientRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\clientRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsalt%%F:\\Development\\Modding\\Salt\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Data",
+      "presentation": {
+        "group": "Mod Development - Salt",
+        "order": 1
+      },
+      "projectName": "Salt",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\dataRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\dataRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsalt%%F:\\Development\\Modding\\Salt\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "GameTestServer",
+      "presentation": {
+        "group": "Mod Development - Salt",
+        "order": 2
+      },
+      "projectName": "Salt",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\gameTestServerRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\gameTestServerRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsalt%%F:\\Development\\Modding\\Salt\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    },
+    {
+      "type": "java",
+      "request": "launch",
+      "name": "Server",
+      "presentation": {
+        "group": "Mod Development - Salt",
+        "order": 3
+      },
+      "projectName": "Salt",
+      "mainClass": "net.neoforged.devlaunch.Main",
+      "args": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\serverRunProgramArgs.txt"
+      ],
+      "vmArgs": [
+        "@F:\\Development\\Modding\\Salt\\build\\moddev\\serverRunVmArgs.txt",
+        "-Dfml.modFolders\u003dsalt%%F:\\Development\\Modding\\Salt\\bin\\main"
+      ],
+      "cwd": "${workspaceFolder}\\run",
+      "env": {},
+      "console": "internalConsole",
+      "shortenCommandLine": "none"
+    }
+  ]
+}

@@ -1,27 +1,30 @@
 package io.github.mortuusars.salt.data.provider;
 
 import io.github.mortuusars.salt.Salt;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.recipes.*;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 public class Recipes extends RecipeProvider {
-    public Recipes(DataGenerator generator) {
-        super(generator.getPackOutput());
+    public Recipes(DataGenerator generator, CompletableFuture<HolderLookup.Provider> lookupProvider) {
+        super(generator.getPackOutput(), lookupProvider);
     }
 
-
     @Override
-    protected void buildRecipes(@NotNull Consumer<FinishedRecipe> recipeConsumer) {
-        // RAW ROCK SALT
+    protected void buildRecipes(@NotNull RecipeOutput recipeOutput) {
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Salt.Items.RAW_ROCK_SALT.get(), 9)
                 .requires(Salt.Items.RAW_ROCK_SALT_BLOCK.get())
                 .unlockedBy("has_rock_salt", has(Salt.Items.RAW_ROCK_SALT.get()))
-                .save(recipeConsumer);
+                .save(recipeOutput);
 
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, Salt.Items.RAW_ROCK_SALT_BLOCK.get())
                 .pattern("###")
@@ -29,13 +32,12 @@ public class Recipes extends RecipeProvider {
                 .pattern("###")
                 .define('#', Salt.Items.RAW_ROCK_SALT.get())
                 .unlockedBy("has_rock_salt", has(Salt.Items.RAW_ROCK_SALT.get()))
-                .save(recipeConsumer);
+                .save(recipeOutput);
 
-        // SALT
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Salt.Items.SALT.get(), 9)
                 .requires(Salt.Items.SALT_BLOCK.get())
                 .unlockedBy("has_salt", has(Salt.Items.SALT.get()))
-                .save(recipeConsumer, Salt.resource("salt_unpacking"));
+                .save(recipeOutput, Salt.resource("salt_unpacking"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, Salt.Items.SALT_BLOCK.get())
                 .pattern("###")
@@ -43,7 +45,7 @@ public class Recipes extends RecipeProvider {
                 .pattern("###")
                 .define('#', Salt.Items.SALT.get())
                 .unlockedBy("has_salt", has(Salt.Items.SALT.get()))
-                .save(recipeConsumer, Salt.resource("salt_packing"));
+                .save(recipeOutput, Salt.resource("salt_packing"));
 
         ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, Salt.Items.SALT_LAMP.get())
                 .pattern(" S ")
@@ -53,18 +55,18 @@ public class Recipes extends RecipeProvider {
                 .define('T', Salt.ItemTags.FORGE_TORCHES)
                 .define('W', ItemTags.WOODEN_SLABS)
                 .unlockedBy("has_rock_salt", has(Salt.Items.RAW_ROCK_SALT.get()))
-                .save(recipeConsumer);
+                .save(recipeOutput);
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Salt.Items.SALT.get())
                 .requires(Salt.Items.RAW_ROCK_SALT.get())
                 .unlockedBy("has_rock_salt", has(Salt.Items.RAW_ROCK_SALT.get()))
-                .save(recipeConsumer, Salt.resource("salt_from_raw_rock_salt"));
+                .save(recipeOutput, Salt.resource("salt_from_raw_rock_salt"));
 
         ShapelessRecipeBuilder.shapeless(RecipeCategory.MISC, Items.GUNPOWDER, 2)
                 .requires(Salt.ItemTags.FORGE_SALTS)
                 .requires(Salt.ItemTags.FORGE_SALTS)
                 .requires(ItemTags.COALS)
                 .unlockedBy("has_salt", has(Salt.Items.SALT.get()))
-                .save(recipeConsumer, Salt.resource("gunpowder"));
+                .save(recipeOutput, Salt.resource("gunpowder"));
     }
 }

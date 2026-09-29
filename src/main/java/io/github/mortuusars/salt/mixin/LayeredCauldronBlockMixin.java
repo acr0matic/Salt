@@ -3,10 +3,15 @@ package io.github.mortuusars.salt.mixin;
 import io.github.mortuusars.salt.configuration.Configuration;
 import io.github.mortuusars.salt.helper.Heater;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LayeredCauldronBlock;
@@ -21,9 +26,15 @@ public class LayeredCauldronBlockMixin {
     @Inject(method = "entityInside", at = @At("HEAD"))
     private void onEntityInside(BlockState state, Level level, BlockPos pos, Entity entity, CallbackInfo ci) {
         if (Configuration.EVAPORATION_ENABLED.get() && state.is(Blocks.WATER_CAULDRON) && Heater.isHeatSource(level.getBlockState(pos.below()))) {
-            if (!entity.fireImmune() && entity instanceof LivingEntity && !EnchantmentHelper.hasFrostWalker((LivingEntity) entity)) {
+            if (!entity.fireImmune() && entity instanceof LivingEntity && !hasFrostWalker((LivingEntity) entity)) {
                 entity.hurt(level.damageSources().onFire(), 1f);
             }
         }
+    }
+
+    private static boolean hasFrostWalker(LivingEntity entity) {
+        RegistryAccess registryAccess = entity.registryAccess();
+        Holder<Enchantment> frostWalker = registryAccess.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.FROST_WALKER);
+        return EnchantmentHelper.getEnchantmentLevel(frostWalker, entity) > 0;
     }
 }

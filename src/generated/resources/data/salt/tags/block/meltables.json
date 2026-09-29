@@ -1,0 +1,10 @@
+{
+  "remove": [
+    "minecraft:frosted_ice",
+    "minecraft:packed_ice"
+  ],
+  "values": [
+    "#minecraft:ice",
+    "#minecraft:snow"
+  ]
+}

@@ -8,6 +8,7 @@ import io.github.mortuusars.salt.helper.CallStackHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -24,7 +25,7 @@ import java.util.List;
 @Mixin(ItemRenderer.class)
 public class ItemRendererMixin {
     @Unique
-    private static final ResourceLocation SALT_OVERLAY = Salt.resource("item/salted_overlay");
+    private static final ModelResourceLocation SALT_OVERLAY = ModelResourceLocation.standalone(Salt.resource("item/salted_overlay"));
 
     /**
      * Combines item model with salted overlay model.

@@ -1,0 +1,26 @@
+{
+  "parent": "salt:adventure/taste_explosion",
+  "criteria": {
+    "evaporate_water_to_form_salt": {
+      "trigger": "salt:salt_evaporated"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "salt.advancement.boil_off.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "minecraft:cauldron"
+    },
+    "title": {
+      "translate": "salt.advancement.boil_off.title"
+    }
+  },
+  "requirements": [
+    [
+      "evaporate_water_to_form_salt"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

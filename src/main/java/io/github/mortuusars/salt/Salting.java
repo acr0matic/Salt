@@ -1,16 +1,10 @@
 package io.github.mortuusars.salt;
 
 import io.github.mortuusars.salt.configuration.Configuration;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.food.FoodProperties;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.event.entity.living.LivingEntityUseItemEvent;
-import net.minecraftforge.registries.ForgeRegistries;
-
-import javax.annotation.Nullable;
-import java.util.Objects;
+import net.minecraft.world.item.component.CustomData;
 
 public class Salting {
 
@@ -24,21 +18,17 @@ public class Salting {
     private static final String SALTED_KEY = "Salted";
 
     public static boolean isSalted(ItemStack itemStack) {
-        return itemStack.hasTag() && Objects.requireNonNull(itemStack.getTag()).contains(SALTED_KEY);
+        CustomData customData = itemStack.get(DataComponents.CUSTOM_DATA);
+        return customData != null && customData.contains(SALTED_KEY);
     }
 
-    /**
-     * Same ItemStack is returned.
-     */
     public static ItemStack setSalted(ItemStack itemStack) {
-        CompoundTag tag = itemStack.getOrCreateTag();
-        tag.putBoolean(SALTED_KEY, true);
+        CustomData.update(DataComponents.CUSTOM_DATA, itemStack, tag -> tag.putBoolean(SALTED_KEY, true));
         return itemStack;
     }
 
     public static FoodValue getAdditionalFoodValue(ItemStack stack) {
-        @Nullable FoodValue foodValue = Configuration.FOOD_VALUES.get(Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem()))
-                .toString());
+        FoodValue foodValue = Configuration.FOOD_VALUES.get(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
         return foodValue != null ? foodValue : new FoodValue(Configuration.SALTING_ADDITIONAL_NUTRITION.get(),
                 Configuration.SALTING_ADDITIONAL_SATURATION_MODIFIER.get().floatValue());
     }

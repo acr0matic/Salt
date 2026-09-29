@@ -28,11 +28,11 @@ public class FoodDataMixin {
         FoodProperties foodProperties = pStack.getFoodProperties(entity);
         Salting.FoodValue additionalFoodValues = Salting.getAdditionalFoodValue(pStack);
 
-        eat(foodProperties.getNutrition() + additionalFoodValues.nutrition(),
-                foodProperties.getSaturationModifier() + additionalFoodValues.saturationModifier());
+        eat(foodProperties.nutrition() + additionalFoodValues.nutrition(),
+                foodProperties.saturation() + additionalFoodValues.saturationModifier());
 
         if (entity instanceof ServerPlayer serverPlayer && !serverPlayer.isCreative())
-                Salt.Advancements.SALTED_FOOD_CONSUMED.trigger(serverPlayer);
+                Salt.Advancements.SALTED_FOOD_CONSUMED.get().trigger(serverPlayer);
 
         ci.cancel();
     }

@@ -10,6 +10,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.category.extensions.vanilla.crafting.ICraftingCategoryExtension;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeHolder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -17,9 +18,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public record SaltingShapelessExtension(SaltingRecipe saltingRecipe) implements ICraftingCategoryExtension {
+public final class SaltingShapelessExtension implements ICraftingCategoryExtension<SaltingRecipe> {
     @Override
-    public void setRecipe(@NotNull IRecipeLayoutBuilder builder, @NotNull ICraftingGridHelper craftingGridHelper, @NotNull IFocusGroup focuses) {
+    public void setRecipe(RecipeHolder<SaltingRecipe> recipeHolder, @NotNull IRecipeLayoutBuilder builder,
+                          @NotNull ICraftingGridHelper craftingGridHelper, @NotNull IFocusGroup focuses) {
+        SaltingRecipe saltingRecipe = recipeHolder.value();
         List<ItemStack> canBeSaltedItems = Arrays.stream(saltingRecipe.getFoodIngredient().getItems()).toList();
 
         if (canBeSaltedItems.size() == 1 && canBeSaltedItems.get(0).is(Items.BARRIER))
@@ -34,10 +37,10 @@ public record SaltingShapelessExtension(SaltingRecipe saltingRecipe) implements 
         inputs.addAll(ingredientItems);
 
         List<IRecipeSlotBuilder> inputSlots = craftingGridHelper.createAndSetInputs(builder, VanillaTypes.ITEM_STACK, inputs, 0, 0);
-
-        IRecipeSlotBuilder outputSlots = craftingGridHelper.createAndSetOutputs(builder, VanillaTypes.ITEM_STACK, canBeSaltedItems.stream()
-                .map(i -> Salting.setSalted(i.copy()))
-                .collect(Collectors.toList()));
+        IRecipeSlotBuilder outputSlots = craftingGridHelper.createAndSetOutputs(builder, VanillaTypes.ITEM_STACK,
+                canBeSaltedItems.stream()
+                        .map(i -> Salting.setSalted(i.copy()))
+                        .collect(Collectors.toList()));
 
         builder.createFocusLink(inputSlots.get(0), outputSlots);
     }

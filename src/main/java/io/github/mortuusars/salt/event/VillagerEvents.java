@@ -8,15 +8,15 @@ import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
-import net.minecraftforge.common.BasicItemListing;
-import net.minecraftforge.event.village.VillagerTradesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.BasicItemListing;
+import net.neoforged.neoforge.event.village.VillagerTradesEvent;
 
 import java.util.List;
 
 @SuppressWarnings("SameParameterValue")
-@Mod.EventBusSubscriber(modid = Salt.ID)
+@EventBusSubscriber(modid = Salt.ID)
 public class VillagerEvents {
     @SubscribeEvent
     public static void onVillagerTrades(VillagerTradesEvent event) {

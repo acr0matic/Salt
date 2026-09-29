@@ -1,47 +1,48 @@
 package io.github.mortuusars.salt.crafting.recipe;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.Salting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.inventory.CraftingContainer;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
+import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class SaltingRecipe extends CustomRecipe {
     private final String group;
     private final NonNullList<Ingredient> ingredients;
 
-    public SaltingRecipe(ResourceLocation id, String group, NonNullList<Ingredient> ingredients) {
-        super(id, CraftingBookCategory.MISC);
+    public SaltingRecipe(String group, NonNullList<Ingredient> ingredients) {
+        super(CraftingBookCategory.MISC);
         this.group = group;
         this.ingredients = ingredients;
     }
 
     @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingContainer pContainer) {
-        return NonNullList.withSize(pContainer.getContainerSize(), ItemStack.EMPTY);
+    public NonNullList<ItemStack> getRemainingItems(CraftingInput container) {
+        return NonNullList.withSize(container.size(), ItemStack.EMPTY);
     }
 
     @Override
-    public boolean matches(CraftingContainer craftingContainer, @NotNull Level level) {
+    public boolean matches(CraftingInput craftingInput, Level level) {
         boolean hasFoodInput = false;
         NonNullList<Boolean> matches = NonNullList.withSize(this.ingredients.size(), false);
         int itemsCount = 0;
 
-        for (int slotIndex = 0; slotIndex < craftingContainer.getContainerSize(); slotIndex++) {
-            ItemStack stackInSlot = craftingContainer.getItem(slotIndex);
+        for (int slotIndex = 0; slotIndex < craftingInput.size(); slotIndex++) {
+            ItemStack stackInSlot = craftingInput.getItem(slotIndex);
             if (stackInSlot.isEmpty())
                 continue;
 
@@ -60,18 +61,22 @@ public class SaltingRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingContainer craftingContainer, @NotNull RegistryAccess registryAccess) {
-        for (int index = 0; index < craftingContainer.getContainerSize(); index++) {
-            ItemStack itemStack = craftingContainer.getItem(index);
+    public ItemStack assemble(CraftingInput craftingInput, HolderLookup.Provider registries) {
+        for (int index = 0; index < craftingInput.size(); index++) {
+            ItemStack itemStack = craftingInput.getItem(index);
 
             if (itemStack.is(Salt.ItemTags.CAN_BE_SALTED)) {
                 ItemStack resultStack = itemStack.copy();
                 resultStack.setCount(1);
-
                 return Salting.setSalted(resultStack);
             }
         }
 
+        return ItemStack.EMPTY;
+    }
+
+    @Override
+    public ItemStack getResultItem(HolderLookup.Provider registries) {
         return ItemStack.EMPTY;
     }
 
@@ -81,13 +86,18 @@ public class SaltingRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
+    public RecipeSerializer<?> getSerializer() {
         return Salt.RecipeSerializers.SALTING.get();
     }
 
     @Override
-    public @NotNull NonNullList<Ingredient> getIngredients() {
+    public NonNullList<Ingredient> getIngredients() {
         return ingredients;
+    }
+
+    @Override
+    public String getGroup() {
+        return group;
     }
 
     public Ingredient getFoodIngredient() {
@@ -95,48 +105,34 @@ public class SaltingRecipe extends CustomRecipe {
     }
 
     public static class Serializer implements RecipeSerializer<SaltingRecipe> {
-        public @NotNull SaltingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            String group = GsonHelper.getAsString(json, "group", "");
-            return new SaltingRecipe(recipeId, group, getIngredients(json));
+        private static final MapCodec<SaltingRecipe> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+                Codec.STRING.optionalFieldOf("group", "").forGetter(recipe -> recipe.group),
+                Ingredient.LIST_CODEC_NONEMPTY.fieldOf("ingredients").forGetter(recipe -> recipe.ingredients)
+        ).apply(instance, Serializer::create));
+
+        private static final StreamCodec<RegistryFriendlyByteBuf, SaltingRecipe> STREAM_CODEC = StreamCodec.composite(
+                ByteBufCodecs.STRING_UTF8, recipe -> recipe.group,
+                Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), recipe -> recipe.ingredients,
+                Serializer::create
+        );
+
+        private static SaltingRecipe create(String group, List<Ingredient> ingredients) {
+            if (ingredients.size() > 9)
+                throw new IllegalArgumentException("Too many ingredients for salting recipe. The maximum is 9");
+
+            NonNullList<Ingredient> nonNullIngredients = NonNullList.create();
+            nonNullIngredients.addAll(ingredients);
+            return new SaltingRecipe(group, nonNullIngredients);
         }
 
-        private NonNullList<Ingredient> getIngredients(JsonObject json) {
-            JsonArray jsonArray = GsonHelper.getAsJsonArray(json, "ingredients");
-            NonNullList<Ingredient> ingredients = NonNullList.create();
-
-            for(int i = 0; i < jsonArray.size(); ++i) {
-                Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i));
-                if (!ingredient.isEmpty())
-                    ingredients.add(ingredient);
-            }
-
-            if (ingredients.isEmpty())
-                throw new JsonParseException("No ingredients for salting recipe");
-            else if (ingredients.size() > 3 * 3)
-                throw new JsonParseException("Too many ingredients for salting recipe. The maximum is 9");
-            return ingredients;
+        @Override
+        public MapCodec<SaltingRecipe> codec() {
+            return CODEC;
         }
 
-        public SaltingRecipe fromNetwork(@NotNull ResourceLocation recipeID, FriendlyByteBuf buffer) {
-            String group = buffer.readUtf();
-            int ingredientsCount = buffer.readVarInt();
-            NonNullList<Ingredient> ingredients = NonNullList.withSize(ingredientsCount, Ingredient.EMPTY);
-
-            //noinspection Java8ListReplaceAll
-            for(int i = 0; i < ingredients.size(); ++i) {
-                ingredients.set(i, Ingredient.fromNetwork(buffer));
-            }
-
-            return new SaltingRecipe(recipeID, group, ingredients);
-        }
-
-        public void toNetwork(FriendlyByteBuf buffer, SaltingRecipe recipe) {
-            buffer.writeUtf(recipe.group);
-            buffer.writeVarInt(recipe.ingredients.size());
-
-            for(Ingredient ingredient : recipe.ingredients) {
-                ingredient.toNetwork(buffer);
-            }
+        @Override
+        public StreamCodec<RegistryFriendlyByteBuf, SaltingRecipe> streamCodec() {
+            return STREAM_CODEC;
         }
     }
 }

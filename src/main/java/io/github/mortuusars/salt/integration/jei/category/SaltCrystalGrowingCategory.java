@@ -18,7 +18,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public class SaltCrystalGrowingCategory implements IRecipeCategory<SaltCrystalGr
                         new ItemStack(Salt.Items.SALT_CLUSTER.get())));
 
         //noinspection DataFlowIssue
-        List<ItemStack> growables = ForgeRegistries.BLOCKS.tags().getTag(Salt.BlockTags.SALT_CLUSTER_GROWABLES).stream().map(ItemStack::new).toList();
+        List<ItemStack> growables = BuiltInRegistries.BLOCK.getTag(Salt.BlockTags.SALT_CLUSTER_GROWABLES).orElseThrow().stream().map(holder -> new ItemStack(holder.value())).toList();
         builder.addSlot(RecipeIngredientRole.INPUT, 104, 127)
                 .addItemStacks(growables);
     }

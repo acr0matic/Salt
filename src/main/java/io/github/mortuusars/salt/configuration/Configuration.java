@@ -2,10 +2,10 @@ package io.github.mortuusars.salt.configuration;
 
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.salt.Salting;
-import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.neoforged.neoforge.common.ModConfigSpec;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -13,54 +13,54 @@ import java.util.List;
 import java.util.Map;
 
 public class Configuration {
-    public static final ForgeConfigSpec COMMON;
-    public static final ForgeConfigSpec CLIENT;
+    public static final ModConfigSpec COMMON;
+    public static final ModConfigSpec CLIENT;
 
     // Salting:
-    public static final ForgeConfigSpec.IntValue SALTING_ADDITIONAL_NUTRITION;
-    public static final ForgeConfigSpec.DoubleValue SALTING_ADDITIONAL_SATURATION_MODIFIER;
-    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> SALTING_INDIVIDUAL_VALUES;
+    public static final ModConfigSpec.IntValue SALTING_ADDITIONAL_NUTRITION;
+    public static final ModConfigSpec.DoubleValue SALTING_ADDITIONAL_SATURATION_MODIFIER;
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> SALTING_INDIVIDUAL_VALUES;
     public static final Map<String, Salting.FoodValue> FOOD_VALUES = new HashMap<>();
 
     // Dissolving
-    public static final ForgeConfigSpec.BooleanValue DISSOLVING_ENABLED;
-    public static final ForgeConfigSpec.DoubleValue DISSOLVING_CHANCE;
-    public static final ForgeConfigSpec.BooleanValue DISSOLVING_FLUID_SOURCE_CONVERSION;
-    public static final ForgeConfigSpec.BooleanValue DISSOLVING_IN_RAIN;
-    public static final ForgeConfigSpec.DoubleValue DISSOLVING_IN_RAIN_CHANCE;
+    public static final ModConfigSpec.BooleanValue DISSOLVING_ENABLED;
+    public static final ModConfigSpec.DoubleValue DISSOLVING_CHANCE;
+    public static final ModConfigSpec.BooleanValue DISSOLVING_FLUID_SOURCE_CONVERSION;
+    public static final ModConfigSpec.BooleanValue DISSOLVING_IN_RAIN;
+    public static final ModConfigSpec.DoubleValue DISSOLVING_IN_RAIN_CHANCE;
 
     // Melting
-    public static final ForgeConfigSpec.BooleanValue MELTING_ITEM_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue MELTING_BY_BLOCK_ENABLED;
-    public static final ForgeConfigSpec.DoubleValue MELTING_BLOCK_CHANCE;
-    public static final ForgeConfigSpec.BooleanValue MELTING_PLACES_WATER;
+    public static final ModConfigSpec.BooleanValue MELTING_ITEM_ENABLED;
+    public static final ModConfigSpec.BooleanValue MELTING_BY_BLOCK_ENABLED;
+    public static final ModConfigSpec.DoubleValue MELTING_BLOCK_CHANCE;
+    public static final ModConfigSpec.BooleanValue MELTING_PLACES_WATER;
 
     // Evaporation
-    public static final ForgeConfigSpec.BooleanValue EVAPORATION_ENABLED;
-    public static final ForgeConfigSpec.DoubleValue EVAPORATION_CHANCE;
+    public static final ModConfigSpec.BooleanValue EVAPORATION_ENABLED;
+    public static final ModConfigSpec.DoubleValue EVAPORATION_CHANCE;
 
     // Cluster Growing
-    public static final ForgeConfigSpec.BooleanValue SALT_CLUSTER_GROWING_ENABLED;
-    public static final ForgeConfigSpec.DoubleValue SALT_CLUSTER_GROWING_CHANCE;
+    public static final ModConfigSpec.BooleanValue SALT_CLUSTER_GROWING_ENABLED;
+    public static final ModConfigSpec.DoubleValue SALT_CLUSTER_GROWING_CHANCE;
 
     // Rock Salt:
-    public static final ForgeConfigSpec.IntValue ROCK_SALT_SIZE;
-    public static final ForgeConfigSpec.DoubleValue ROCK_SALT_CLUSTER_CHANCE;
+    public static final ModConfigSpec.IntValue ROCK_SALT_SIZE;
+    public static final ModConfigSpec.DoubleValue ROCK_SALT_CLUSTER_CHANCE;
 
     // Villager Trades:
-    public static final ForgeConfigSpec.BooleanValue BUTCHER_SALT_TRADES_ENABLED;
+    public static final ModConfigSpec.BooleanValue BUTCHER_SALT_TRADES_ENABLED;
 
 
     // CLIENT
 
-    public static final ForgeConfigSpec.BooleanValue SALTED_OVERLAY_ENABLED;
+    public static final ModConfigSpec.BooleanValue SALTED_OVERLAY_ENABLED;
 
     // JEI:
-    public static final ForgeConfigSpec.BooleanValue JEI_SALT_EVAPORATION_ENABLED;
-    public static final ForgeConfigSpec.BooleanValue JEI_SALT_CRYSTAL_GROWING_ENABLED;
+    public static final ModConfigSpec.BooleanValue JEI_SALT_EVAPORATION_ENABLED;
+    public static final ModConfigSpec.BooleanValue JEI_SALT_CRYSTAL_GROWING_ENABLED;
 
     static {
-        ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
 
         builder.comment("Salting foods to add extra nutrition. Can be disabled by removing 'salt:salting' recipe " +
                 "or removing all items from 'salt/tags/items/can_be_salted' tag.").push("Salting");
@@ -162,7 +162,7 @@ public class Configuration {
         builder.comment("Rock Salt Deposits will generate in biomes defined in tag 'salt/tags/worldgen/biome/has_rock_salt_deposits'",
                         "Since 1.19 - parts of the Rock Salt generation is defined in jsons.",
                         "To enable/disable the generation or configure the generation chances you'll need to create a datapack.",
-                        "Enable/disable generation - 'salt/worldgen/biome_modifier/add_rock_salt_deposit.json' - {\"type\": \"forge:none\"} will disable the generation.",
+                        "Enable/disable generation - 'salt/worldgen/biome_modifier/add_rock_salt_deposit.json' - {\"type\": \"neoforge:none\"} will disable the generation.",
                         "Changing generation chances - 'salt/worldgen/placed_feature/mineral_rock_salt.json'")
                 .push("RockSalt");
 
@@ -192,7 +192,7 @@ public class Configuration {
 
 
 
-        builder = new ForgeConfigSpec.Builder();
+        builder = new ModConfigSpec.Builder();
 
         builder.push("JEI/REI");
 
@@ -219,9 +219,9 @@ public class Configuration {
         CLIENT = builder.build();
     }
 
-    public static void init() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, COMMON);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, CLIENT);
+    public static void init(ModContainer modContainer) {
+        modContainer.registerConfig(ModConfig.Type.COMMON, COMMON);
+        modContainer.registerConfig(ModConfig.Type.CLIENT, CLIENT);
     }
 
     public static void onConfigReload(final ModConfigEvent.Reloading ignoredEvent) {

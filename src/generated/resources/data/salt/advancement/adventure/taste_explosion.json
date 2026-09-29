@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:husbandry/root",
+  "criteria": {
+    "eat_salted_food": {
+      "trigger": "salt:salted_food_consumed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "salt.advancement.taste_explosion.description"
+    },
+    "icon": {
+      "count": 1,
+      "id": "salt:salt"
+    },
+    "title": {
+      "translate": "salt.advancement.taste_explosion.title"
+    }
+  },
+  "requirements": [
+    [
+      "eat_salted_food"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -18,7 +18,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -59,7 +59,8 @@ public class SaltEvaporationCategory implements IRecipeCategory<SaltEvaporationD
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull SaltEvaporationDummy recipe, @NotNull IFocusGroup focuses) {
-        Item salt = Objects.requireNonNull(ForgeRegistries.ITEMS.tags()).getTag(Salt.ItemTags.FORGE_SALTS).stream().findFirst()
+        Item salt = BuiltInRegistries.ITEM.getTag(Salt.ItemTags.FORGE_SALTS).orElseThrow().stream().findFirst()
+                .map(holder -> holder.value())
                 .orElse(Salt.Items.SALT.get());
 
         builder.addSlot(RecipeIngredientRole.OUTPUT, 122, 14)

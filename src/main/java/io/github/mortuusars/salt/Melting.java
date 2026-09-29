@@ -2,7 +2,7 @@ package io.github.mortuusars.salt;
 
 import io.github.mortuusars.salt.configuration.Configuration;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.BlockSource;
+import net.minecraft.core.dispenser.BlockSource;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Position;
 import net.minecraft.core.dispenser.DefaultDispenseItemBehavior;
@@ -27,15 +27,15 @@ public class Melting {
             if (!stack.is(Salt.ItemTags.FORGE_SALTS))
                 return stack;
 
-            Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
+            Direction direction = source.state().getValue(DispenserBlock.FACING);
             ItemStack itemstack = stack.split(1);
 
-            BlockPos targetPos = source.getPos().relative(direction);
-            BlockState targetState = source.getLevel().getBlockState(targetPos);
+            BlockPos targetPos = source.pos().relative(direction);
+            BlockState targetState = source.level().getBlockState(targetPos);
 
-            if (!tryMeltFromItem(targetState, targetPos, source.getLevel())) {
+            if (!tryMeltFromItem(targetState, targetPos, source.level())) {
                 Position position = DispenserBlock.getDispensePosition(source);
-                spawnItem(source.getLevel(), itemstack, 6, direction, position);
+                spawnItem(source.level(), itemstack, 6, direction, position);
             }
 
             return stack;

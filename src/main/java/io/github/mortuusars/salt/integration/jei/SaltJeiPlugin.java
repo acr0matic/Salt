@@ -19,7 +19,7 @@ import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraft.core.registries.BuiltInRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
@@ -68,14 +68,14 @@ public class SaltJeiPlugin implements IModPlugin {
     @Override
     public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
         registration.getCraftingCategory()
-                .addCategoryExtension(SaltingRecipe.class, SaltingShapelessExtension::new);
+                .addExtension(SaltingRecipe.class, new SaltingShapelessExtension());
     }
 
     private boolean isSaltEvaporationEnabled() {
         return Configuration.JEI_SALT_EVAPORATION_ENABLED.get()
                 && Configuration.EVAPORATION_ENABLED.get()
                 && Configuration.EVAPORATION_CHANCE.get() > 0.0d
-                && !Objects.requireNonNull(ForgeRegistries.BLOCKS.tags()).getTag(Salt.BlockTags.HEATERS).isEmpty();
+                && !BuiltInRegistries.BLOCK.getTag(Salt.BlockTags.HEATERS).isPresent();
     }
 
     private boolean isSaltCrystalGrowingEnabled() {

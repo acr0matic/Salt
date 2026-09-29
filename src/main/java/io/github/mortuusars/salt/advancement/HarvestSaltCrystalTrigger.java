@@ -1,32 +1,28 @@
 package io.github.mortuusars.salt.advancement;
 
-import com.google.gson.JsonObject;
+import com.mojang.serialization.Codec;
 import io.github.mortuusars.salt.Salt;
-import net.minecraft.advancements.critereon.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.advancements.critereon.SimpleCriterionTrigger;
 import net.minecraft.server.level.ServerPlayer;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class HarvestSaltCrystalTrigger extends SimpleCriterionTrigger<HarvestSaltCrystalTrigger.TriggerInstance> {
-    private static final ResourceLocation ID = Salt.resource("harvest_salt_crystal");
+    private static final Codec<TriggerInstance> CODEC = Codec.unit(new TriggerInstance());
 
     @Override
-    public @NotNull ResourceLocation getId() {
-        return ID;
-    }
-
-    @Override
-    protected HarvestSaltCrystalTrigger.@NotNull TriggerInstance createInstance(@NotNull JsonObject json, ContextAwarePredicate predicate, @NotNull DeserializationContext conditionsParser) {
-        return new HarvestSaltCrystalTrigger.TriggerInstance(predicate);
+    public Codec<TriggerInstance> codec() {
+        return CODEC;
     }
 
     public void trigger(ServerPlayer player) {
-        this.trigger(player, triggerInstance -> true);
+        trigger(player, triggerInstance -> true);
     }
 
-    public static class TriggerInstance extends AbstractCriterionTriggerInstance {
-        public TriggerInstance(ContextAwarePredicate predicate) {
-            super(HarvestSaltCrystalTrigger.ID, predicate);
+    public static final class TriggerInstance implements SimpleCriterionTrigger.SimpleInstance {
+        @Override
+        public Optional<net.minecraft.advancements.critereon.ContextAwarePredicate> player() {
+            return Optional.empty();
         }
     }
 }

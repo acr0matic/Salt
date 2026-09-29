@@ -3,9 +3,9 @@ package io.github.mortuusars.salt.data.provider;
 import io.github.mortuusars.salt.Salt;
 import io.github.mortuusars.salt.client.LangKeys;
 import net.minecraft.data.DataGenerator;
-import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.common.data.SoundDefinition;
-import net.minecraftforge.common.data.SoundDefinitionsProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.common.data.SoundDefinition;
+import net.neoforged.neoforge.common.data.SoundDefinitionsProvider;
 
 public class Sounds extends SoundDefinitionsProvider {
     public Sounds(DataGenerator generator, ExistingFileHelper helper) {
