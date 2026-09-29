@@ -15,9 +15,12 @@ public class AppleSkinHandler {
 
         Salting.FoodValue additionalFoodValue = Salting.getAdditionalFoodValue(foodStack);
         FoodProperties foodProperties = event.modifiedFoodProperties;
-        event.modifiedFoodProperties = new FoodProperties.Builder()
-                .nutrition(foodProperties.nutrition() + additionalFoodValue.nutrition())
-                .saturationModifier(foodProperties.saturation() + additionalFoodValue.saturationModifier())
-                .build();
+
+        // FoodProperties.saturation в 1.21 - уже плоские очки насыщения, а не модификатор.
+        event.modifiedFoodProperties = new FoodProperties(
+                foodProperties.nutrition() + additionalFoodValue.nutrition(),
+                foodProperties.saturation() + additionalFoodValue.saturation(),
+                foodProperties.canAlwaysEat(), foodProperties.eatSeconds(),
+                foodProperties.usingConvertsTo(), foodProperties.effects());
     }
 }

@@ -6,7 +6,6 @@
   "mixins": [
     "BlockBehaviourMixin",
     "BlockMixin",
-    "FoodDataMixin",
     "LayeredCauldronBlockMixin",
     "PointedDripstoneBlockMixin",
     "WaterCauldronMixin"

@@ -8,10 +8,11 @@ import net.minecraft.world.item.component.CustomData;
 
 public class Salting {
 
-    public record FoodValue(int nutrition, float saturationModifier) {
+    // saturation - плоские очки насыщения (1 = половина шашки), а не модификатор.
+    public record FoodValue(int nutrition, float saturation) {
         @Override
         public String toString() {
-            return "{Nutrition:" + nutrition + ",Saturation:" + saturationModifier + "}";
+            return "{Nutrition:" + nutrition + ",Saturation:" + saturation + "}";
         }
     }
 
@@ -30,6 +31,6 @@ public class Salting {
     public static FoodValue getAdditionalFoodValue(ItemStack stack) {
         FoodValue foodValue = Configuration.FOOD_VALUES.get(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
         return foodValue != null ? foodValue : new FoodValue(Configuration.SALTING_ADDITIONAL_NUTRITION.get(),
-                Configuration.SALTING_ADDITIONAL_SATURATION_MODIFIER.get().floatValue());
+                Configuration.SALTING_ADDITIONAL_SATURATION.get().floatValue());
     }
 }

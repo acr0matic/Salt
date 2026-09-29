@@ -104,7 +104,7 @@ public class ClientEvents {
             List<Component> toolTip = event.getToolTip();
             Salting.FoodValue additionalFoodValue = Salting.getAdditionalFoodValue(itemStack);
             toolTip.add(toolTip.size() >= 1 ? 1 : 0, SaltedTooltip.get(additionalFoodValue.nutrition(),
-                    additionalFoodValue.saturationModifier(), Screen.hasShiftDown() && !ModList.get().isLoaded("appleskin")));
+                    additionalFoodValue.saturation(), Screen.hasShiftDown() && !ModList.get().isLoaded("appleskin")));
         }
     }
 

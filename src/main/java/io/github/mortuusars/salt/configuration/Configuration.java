@@ -18,7 +18,8 @@ public class Configuration {
 
     // Salting:
     public static final ModConfigSpec.IntValue SALTING_ADDITIONAL_NUTRITION;
-    public static final ModConfigSpec.DoubleValue SALTING_ADDITIONAL_SATURATION_MODIFIER;
+    public static final ModConfigSpec.DoubleValue SALTING_ADDITIONAL_SATURATION;
+
     public static final ModConfigSpec.ConfigValue<List<? extends String>> SALTING_INDIVIDUAL_VALUES;
     public static final Map<String, Salting.FoodValue> FOOD_VALUES = new HashMap<>();
 
@@ -75,15 +76,17 @@ public class Configuration {
                 .comment("Amount of additional nutrition that salted food provides. 1 nutrition = half of hunger shank.",
                         "Negative values will decrease hunger restored.")
                 .defineInRange("SaltingNutrition", 2, -20, 20);
-        SALTING_ADDITIONAL_SATURATION_MODIFIER = builder
-                .comment("Amount of additional saturation modifier to apply when food is eaten.")
-                .defineInRange("SaltingSaturationModifier", 0.1f, -10.0, 10.0f);
+        SALTING_ADDITIONAL_SATURATION = builder
+                .comment("Amount of additional saturation points salted food provides. 1 point = half a saturation shank.")
+                .defineInRange("SaltingSaturation", 2.0, -40.0, 40.0);
 
         SALTING_INDIVIDUAL_VALUES = builder
                 .comment("Additional nutrition and saturation values per food. Overrides default values (defined above).",
-                        "Format: itemRegistryName,nutrition,[saturationModifier].",
+                        "Format: itemRegistryName,nutrition,[saturation].",
                         "Separated by commas. Saturation is optional (will use default value if not specified)")
-                .defineList("SaltingFoodValues", List.of("minecraft:rotten_flesh,1,0.05"), o -> true);
+                .defineList("SaltingFoodValues", List.of("minecraft:rotten_flesh,1,1"), o -> true);
+
+
 
         builder.pop();
 
@@ -292,7 +295,7 @@ public class Configuration {
                 if (itemPath != null && nutrition != null) {
                     FOOD_VALUES.put(itemPath, new Salting.FoodValue(nutrition, saturationMod != null ?
                             saturationMod
-                            : SALTING_ADDITIONAL_SATURATION_MODIFIER.get().floatValue()));
+                            : SALTING_ADDITIONAL_SATURATION.get().floatValue()));
                 }
             }
             catch (Throwable e) {
